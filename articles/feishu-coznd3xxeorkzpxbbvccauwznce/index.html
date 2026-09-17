@@ -1,12 +1,11 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（LLM），你们的沟通方式（Prompt），他能联系的各种服务商（Fu…"><title>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 · binglu’s blog</title><link rel="canonical" href="https://vic-ice.github.io/articles/feishu-coznd3xxeorkzpxbbvccauwznce/"><meta property="og:title" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 · binglu’s blog"><meta property="og:description" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（LLM），你们的沟通方式（Prompt），他能联系的各种服务商（Fu…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="binglu’s blog 文章订阅" href="/atom.xml"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><style>.reader.reading-layout{max-width:700px;padding-bottom:80px}.reader.reading-layout.has-outline{grid-template-columns:minmax(0,700px) clamp(160px,19vw,224px);align-items:start;column-gap:clamp(24px,4vw,64px);max-width:1024px;display:grid}.reader-head{grid-column:1;min-width:0;padding-bottom:26px}.reader-head .back{margin:28px 0 36px}.reader-head .eyebrow{color:#707767;font-size:13px}.reader-head h1{margin:14px 0 20px}.reader-meta{color:#6d7565;flex-wrap:wrap;align-items:center;gap:10px;margin:0;font-size:13px;line-height:1.7;display:flex}.reader-body{grid-column:1;min-width:0}.reader-body>:first-child{margin-top:0}.reader .reader-body :is(h2,h3,h4){scroll-margin-top:40px}.reader .reader-body :is(h2,h3):focus{outline:none}.reader-outline{grid-area:1/2/span 2;min-width:0;margin-top:82px;position:sticky;top:36px}.reader-outline summary{color:#414a39;cursor:pointer;align-items:center;gap:12px;padding:0 0 16px 15px;font-size:13px;font-weight:600;list-style:none;display:flex}.reader-outline summary::-webkit-details-marker{display:none}.toc-count{color:#757d6c;margin-left:auto;font-size:11px;font-weight:400}.toc-chevron{display:none}.toc-links{overscroll-behavior:contain;scrollbar-width:thin;border-left:1px solid var(--line);flex-direction:column;align-items:stretch;gap:0;max-height:calc(100dvh - 120px);padding:0;display:flex;overflow-y:auto}.toc-links a{color:#737a6a;overflow-wrap:anywhere;border-left:2px solid #0000;margin-left:-1px;padding:8px 8px 8px 14px;font-size:13px;line-height:1.65;transition:color .12s;display:block}.toc-links a.toc-child{padding-left:28px;font-size:12px}.toc-links a[aria-current=location]{border-left-color:var(--accent);color:#70422f;background:#87513c08;font-weight:600}.toc-links a:hover{color:var(--accent)}@media (width<=699px){.reader.reading-layout.has-outline{max-width:700px;display:block}.reader-outline{z-index:30;background:#faf8f4;border:1px solid #d9d7cb;border-radius:8px;width:auto;max-width:calc(100vw - 32px);margin:0;position:fixed;inset:auto 16px 24px auto;box-shadow:0 4px 20px #30362d12}.reader-outline:has(details[open]){width:292px;inset:92px 16px auto auto;box-shadow:0 12px 44px #30362d26}.reader-outline summary{min-height:48px;padding:14px 16px}.toc-chevron{font-size:17px;line-height:1;display:block}#reader-toc[open] .toc-chevron{transform:rotate(180deg)}.toc-links{max-height:calc(100dvh - 176px);padding:0 12px 14px}.reader .reader-body :is(h2,h3,h4){scroll-margin-top:76px}}@media (width<=760px){.reader-head .back{margin:24px 0 28px}.reader-head{padding-bottom:24px}.reader-meta{gap:8px;font-size:12px}.reader-outline{margin-bottom:0}}
-</style><link rel="stylesheet" href="/_astro/Base.CVlmqG46.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/" aria-label="冰露 · 首页">binglu’s blog<span class="brand-dot" aria-hidden="true"></span></a><nav aria-label="主导航"><a href="/" aria-current="page">文章</a><a href="/map/">文章地图</a><a href="/shelf/">书架</a><a href="/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader reading-layout has-outline"><header class="reader-head"><a id="article-back" class="back" href="/">← 返回文章</a><div class="eyebrow">Agent 与 RAG</div><h1>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别</h1><p class="reader-meta"><span>冰露</span><span aria-hidden="true">·</span><time datetime="2025-05-23">2025-05-23</time><span aria-hidden="true">·</span><span>6 分钟</span></p></header><aside class="reader-outline" aria-label="文章导航"><details id="reader-toc" open><summary><span>本文目录</span><span class="toc-count">9 节</span><span class="toc-chevron" aria-hidden="true">⌄</span></summary><nav class="toc-links" aria-label="本文目录"><a href="#1-llm大语言模型专业的旅行顾问" data-heading="1-llm大语言模型专业的旅行顾问" class="toc-child">1. LLM（大语言模型）：专业的“旅行顾问”</a><a href="#2-prompt与旅行顾问沟通的艺术" data-heading="2-prompt与旅行顾问沟通的艺术" class="toc-child">2. Prompt：与旅行顾问沟通的“艺术”</a><a href="#实际应用场景" data-heading="实际应用场景" class="toc-child">实际应用场景</a><a href="#agent-的核心能力" data-heading="agent-的核心能力" class="toc-child">Agent 的核心能力：</a><a href="#没有-mcp-之前的混乱" data-heading="没有-mcp-之前的混乱" class="toc-child">没有 MCP 之前的混乱</a><a href="#mcp-带来的统一" data-heading="mcp-带来的统一" class="toc-child">MCP 带来的统一</a><a href="#完整工作流程" data-heading="完整工作流程">完整工作流程</a><a href="#常见误区澄清" data-heading="常见误区澄清" class="toc-child">常见误区澄清</a><a href="#总结" data-heading="总结" class="toc-child">总结</a></nav></details></aside><div class="prose reader-body"><title>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别</title>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（LLM），你们的沟通方式（Prompt），他能联系的各种服务商（Fu…"><title>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 · binglu’s blog</title><link rel="canonical" href="https://vic-ice.github.io/articles/feishu-coznd3xxeorkzpxbbvccauwznce/"><meta property="og:title" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 · binglu’s blog"><meta property="og:description" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（LLM），你们的沟通方式（Prompt），他能联系的各种服务商（Fu…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="binglu’s blog 文章订阅" href="/atom.xml"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="stylesheet" href="/_astro/_id_.CtDh9tZD.css"><link rel="stylesheet" href="/_astro/Base.CVlmqG46.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/" aria-label="冰露 · 首页">binglu’s blog<span class="brand-dot" aria-hidden="true"></span></a><nav aria-label="主导航"><a href="/" aria-current="page">文章</a><a href="/map/">文章地图</a><a href="/shelf/">书架</a><a href="/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader reading-layout has-outline"><header class="reader-head"><a id="article-back" class="back" href="/">← 返回文章</a><div class="eyebrow">Agent 与 RAG</div><h1>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别</h1><p class="reader-meta"><span>冰露</span><span aria-hidden="true">·</span><time datetime="2025-05-23">2025-05-23</time><span aria-hidden="true">·</span><span>6 分钟</span></p></header><aside class="reader-outline" aria-label="文章导航"><details id="reader-toc" open><summary><span>本文目录</span><span class="toc-count">9 章</span><span class="toc-chevron" aria-hidden="true">⌄</span></summary><nav class="toc-links" aria-label="本文目录"><div class="toc-group" data-group="1-llm大语言模型专业的旅行顾问"><div class="toc-row"><a href="#1-llm大语言模型专业的旅行顾问" data-heading="1-llm大语言模型专业的旅行顾问">1. LLM（大语言模型）：专业的“旅行顾问”</a></div></div><div class="toc-group" data-group="2-prompt与旅行顾问沟通的艺术"><div class="toc-row"><a href="#2-prompt与旅行顾问沟通的艺术" data-heading="2-prompt与旅行顾问沟通的艺术">2. Prompt：与旅行顾问沟通的“艺术”</a><button class="toc-expand" hidden aria-label="展开小节：2. Prompt：与旅行顾问沟通的“艺术”" aria-expanded="false" aria-controls="toc-children-1">＋</button></div><div class="toc-children" id="toc-children-1"><a href="#system-prompt系统提示词" data-heading="system-prompt系统提示词" class="toc-child">System Prompt（系统提示词）</a><a href="#user-prompt用户提示词" data-heading="user-prompt用户提示词" class="toc-child">User Prompt（用户提示词）</a></div></div><div class="toc-group" data-group="实际应用场景"><div class="toc-row"><a href="#实际应用场景" data-heading="实际应用场景">实际应用场景</a></div></div><div class="toc-group" data-group="agent-的核心能力"><div class="toc-row"><a href="#agent-的核心能力" data-heading="agent-的核心能力">Agent 的核心能力：</a></div></div><div class="toc-group" data-group="没有-mcp-之前的混乱"><div class="toc-row"><a href="#没有-mcp-之前的混乱" data-heading="没有-mcp-之前的混乱">没有 MCP 之前的混乱</a></div></div><div class="toc-group" data-group="mcp-带来的统一"><div class="toc-row"><a href="#mcp-带来的统一" data-heading="mcp-带来的统一">MCP 带来的统一</a></div></div><div class="toc-group" data-group="完整工作流程"><div class="toc-row"><a href="#完整工作流程" data-heading="完整工作流程">完整工作流程</a></div></div><div class="toc-group" data-group="常见误区澄清"><div class="toc-row"><a href="#常见误区澄清" data-heading="常见误区澄清">常见误区澄清</a></div></div><div class="toc-group" data-group="总结"><div class="toc-row"><a href="#总结" data-heading="总结">总结</a></div></div></nav></details></aside><div class="prose reader-body"><title>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别</title>
 <blockquote>
 <p>想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（<strong>LLM</strong>），你们的沟通方式（<strong>Prompt</strong>），他能联系的各种服务商（<strong>Function Call</strong>），整个旅行社的智能规划系统（<strong>Agent</strong>），以及所有服务商的统一预订标准（<strong>MCP</strong>）。让我们通过这个旅行场景，一步步理解这些概念。</p>
 </blockquote>
-<h3 id="1-llm大语言模型专业的旅行顾问"><strong>1. LLM（大语言模型）：专业的“旅行顾问”</strong></h3>
+<h2 id="1-llm大语言模型专业的旅行顾问">1. LLM（大语言模型）：专业的“旅行顾问”</h2>
 <p>LLM 就像那位经验丰富的旅行顾问，他了解世界各地的风土人情，能理解你的需求并给出建议。但他的信息有<strong>局限性</strong>——比如不知道今天的机票价格，也不清楚酒店的实时房态。</p>
-<h3 id="2-prompt与旅行顾问沟通的艺术"><strong>2. Prompt：与旅行顾问沟通的“艺术”</strong></h3>
-<h4 id="system-prompt系统提示词">System Prompt（系统提示词）</h4>
+<h2 id="2-prompt与旅行顾问沟通的艺术">2. Prompt：与旅行顾问沟通的“艺术”</h2>
+<h3 id="system-prompt系统提示词">System Prompt（系统提示词）</h3>
 <p>就像旅行社给顾问的工作指南，规定了<strong>服务标准</strong>和<strong>风格</strong>。</p>
 <p><strong>具体示例：</strong></p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>System Prompt:</span></span>
@@ -15,11 +14,11 @@
 <span class="line"><span>2. 考虑天气和季节因素</span></span>
 <span class="line"><span>3. 提供详细的行程安排</span></span>
 <span class="line"><span>4. 推荐性价比高的选择</span></span></code></pre>
-<h4 id="user-prompt用户提示词">User Prompt（用户提示词）</h4>
+<h3 id="user-prompt用户提示词">User Prompt（用户提示词）</h3>
 <p>就是你向旅行顾问提出的<strong>需求</strong>。</p>
 <p><strong>具体示例：</strong></p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>User: 我想下周去杭州玩3天，预算5000元，有什么建议？</span></span></code></pre>
-<h3 id="实际应用场景"><strong>实际应用场景</strong></h3>
+<h2 id="实际应用场景">实际应用场景</h2>
 <p><strong>场景 1：商务风格</strong></p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>System Prompt: 你是专注商务出行的顾问，注重效率和便利</span></span>
 <span class="line"><span>User: 去杭州出差3天</span></span>
@@ -55,7 +54,7 @@
 <li><strong>工具</strong>：计算器（输入数字，返回结果）</li>
 <li><strong>Agent</strong>：数学老师（理解你的问题，选择合适方法，一步步教你解题）</li>
 </ul>
-<h3 id="agent-的核心能力"><strong>Agent 的核心能力：</strong></h3>
+<h2 id="agent-的核心能力">Agent 的核心能力：</h2>
 <ul>
 <li><strong>行程分解</strong>：将“3 天杭州游”分解为交通、住宿、景点、餐饮等模块</li>
 <li><strong>时间管理</strong>：确保航班时间与酒店入住时间衔接</li>
@@ -66,7 +65,7 @@
 <li>MCP（Model Context Protocol）：统一的“服务标准”</li>
 </ol>
 <p>MCP 就像是外出旅行的<strong>标准化</strong>手册。</p>
-<h3 id="没有-mcp-之前的混乱">没有 MCP 之前的混乱</h3>
+<h2 id="没有-mcp-之前的混乱">没有 MCP 之前的混乱</h2>
 <p>想象你的 AI 助手要调用不同的工具，每个工具都有<strong>完全不同</strong>的接入方式：</p>
 <p><strong>调用天气工具：</strong></p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 工具A：需要先初始化，再调用</span></span>
@@ -111,7 +110,7 @@
 <li>给 D 公司要写信</li>
 </ul>
 <p>这样 AI 助手怎么高效工作？</p>
-<h3 id="mcp-带来的统一">MCP 带来的统一</h3>
+<h2 id="mcp-带来的统一">MCP 带来的统一</h2>
 <p>有了 MCP，所有工具调用都遵循<strong>统一</strong>标准：</p>
 <pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 所有服务都用统一格式</span></span>
 <span class="line"><span style="color:#E1E4E8">mcp.call(</span><span style="color:#9ECBFF">"flight"</span><span style="color:#E1E4E8">, {</span><span style="color:#9ECBFF">"from"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"北京"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"to"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"date"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"2024-12-28"</span><span style="color:#E1E4E8">})</span></span>
@@ -159,14 +158,14 @@
 <span class="line"><span>    住宿：西湖边精品酒店 ¥1200</span></span>
 <span class="line"><span>    门票+餐饮：¥2000</span></span>
 <span class="line"><span>    预留机动资金：¥1200"</span></span></code></pre>
-<h3 id="常见误区澄清">常见误区澄清</h3>
+<h2 id="常见误区澄清">常见误区澄清</h2>
 <p>❌ **误区 1**：Agent 就是工具的集合</p>
 <p>✅ **正确**：Agent 是能自主规划和决策的系统</p>
 <p>❌ **误区 2**：每次对话都需要 Function Call</p>
 <p>✅ **正确**：LLM 有知识储备时直接回答，只在需要实时信息时调用</p>
 <p>❌ **误区 3**：MCP 让所有工具功能一样</p>
 <p>✅ **正确**：MCP 只统一调用方式，使接口兼容，工具功能各不相同</p>
-<h3 id="总结">总结</h3>
+<h2 id="总结">总结</h2>
 <ul>
 <li>**LLM（旅行顾问）：**核心大脑，拥有丰富的旅行知识</li>
 <li><strong>Prompt（沟通方式）：System Prompt 是服务标准</strong>，<strong>User Prompt 是客户需求</strong></li>
@@ -176,4 +175,4 @@
 </ul>
 <p>这就像一家专业的旅行社：经验丰富的旅行顾问（<strong>LLM</strong>）按照服务标准（<strong>System Prompt</strong>）工作，理解客户需求（<strong>User Prompt</strong>），必要时联系各个服务商（<strong>Function Call</strong>），整个行程规划系统（<strong>Agent</strong>）智能协调，而所有合作方都遵循统一预订标准（<strong>MCP</strong>）——最终为客户打造完美的旅行体验！</p>
 <p>如有任何问题，欢迎评论区留言讨论！！！</p>
-</div></article><script type="module" src="/_astro/_id_.astro_astro_type_script_index_0_lang.BkPsizG1.js"></script></main><footer><span>© 2026 binglu’s blog</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/_astro/Base.astro_astro_type_script_index_0_lang.8DhEGnu8.js"></script></body></html>
+</div></article><script type="module" src="/_astro/_id_.astro_astro_type_script_index_0_lang.PTvqocNX.js"></script></main><footer><span>© 2026 binglu’s blog</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/_astro/Base.astro_astro_type_script_index_0_lang.8DhEGnu8.js"></script></body></html>
