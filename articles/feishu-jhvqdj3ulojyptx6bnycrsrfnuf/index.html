@@ -1,0 +1,148 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="什么是提示词？ 过年时，我发现家里人虽然知道“豆包”这样的智能助手，但真正用的时候总觉得它不好使，输出的内容总是“差点意思”。 其实，要让豆包回答得更贴心、更准确，靠的不是运气，而是会用提示词。 提示词（Prompt）就是对任务的描…"><title>怎么跟豆包说话，它才听得懂？ · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-jhvqdj3ulojyptx6bnycrsrfnuf/"><meta property="og:title" content="怎么跟豆包说话，它才听得懂？ · BINGLU"><meta property="og:description" content="什么是提示词？ 过年时，我发现家里人虽然知道“豆包”这样的智能助手，但真正用的时候总觉得它不好使，输出的内容总是“差点意思”。 其实，要让豆包回答得更贴心、更准确，靠的不是运气，而是会用提示词。 提示词（Prompt）就是对任务的描…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">AI 工具</div><h1>怎么跟豆包说话，它才听得懂？</h1><p class="quiet">胡守谦 · 2026-02-24 · 5 分钟</p><details class="article-toc"><summary>本文目录 · 6 节</summary><nav aria-label="本文目录"><a href="#什么是提示词" style="padding-left:0px">什么是提示词？</a><a href="#一系统提示词system-prompt" style="padding-left:0px">一、系统提示词（System Prompt）</a><a href="#二用户提示词user-prompt" style="padding-left:0px">二、用户提示词（User Prompt）</a><a href="#三不同类型的提示方式" style="padding-left:0px">三、不同类型的提示方式</a><a href="#四几种思考方式的使用" style="padding-left:0px">四、几种思考方式的使用</a><a href="#五总结" style="padding-left:0px">五、总结</a></nav></details><div class="prose"><h2 id="什么是提示词">什么是提示词？</h2>
+<p>过年时，我发现家里人虽然知道“豆包”这样的智能助手，但真正用的时候总觉得它不好使，输出的内容总是“差点意思”。</p>
+<p>其实，要让豆包回答得更贴心、更准确，靠的不是运气，而是会用提示词。</p>
+<p>提示词（Prompt）就是对任务的描述。你告诉模型你想达到什么效果，它根据你的指令生成相应的回答或结果。</p>
+<p>模型的效果好坏，与提示词的描述是否全面、用词是否准确成正比。说得越清楚，结果通常就越好。</p>
+<p>换句话说，提示词是人与模型沟通的桥梁。</p>
+<hr>
+<h2 id="一系统提示词system-prompt">一、系统提示词（System Prompt）</h2>
+<p>不同的模型、不同的场景，回答风格会各不相同，这是系统提示词在起作用。</p>
+<p>系统提示词相当于给模型定下“性格”和“语气基调”。比如：</p>
+<ul>
+<li>淘宝客服场景：模型语气更口语化、温柔、亲切。</li>
+</ul>
+<blockquote>
+<ul>
+<li>示例：“您好亲，有什么我可以帮您的吗？”</li>
+</ul>
+</blockquote>
+<ul>
+<li>法律咨询场景：语气更严肃、专业。</li>
+</ul>
+<blockquote>
+<ul>
+<li>示例：“根据《劳动合同法》第二十条的规定，您可以通过以下途径维权……”</li>
+</ul>
+</blockquote>
+<p>这背后的区别，其实就是后台给模型换了一套不一样的系统提示词：把它的说话语气、出场角色都先定死了，相当于给它加了一层“行为约束”。</p>
+<hr>
+<h2 id="二用户提示词user-prompt">二、用户提示词（User Prompt）</h2>
+<p>系统提示词决定模型“是谁”，而用户提示词由我们输入，决定模型“要做什么”。</p>
+<p>用户提示词就是你自己在对话中输入的内容，也就是你发给豆包的每条消息。比如：</p>
+<ul>
+<li>“帮我写一条给家人拜年的祝福语。”</li>
+<li>“解释一下量子纠缠，但用我能听懂的方式说。”</li>
+<li>“你现在是一位育儿专家，请帮我制定一岁宝宝的作息表。”</li>
+</ul>
+<p>当你在提示词中加入角色设定，模型的表现会更符合预期。</p>
+<p>举例：</p>
+<blockquote>
+<p>“你是一位资深的中学物理老师，请用生动形象、大白话的语气给我讲解浮力的原理。”</p>
+</blockquote>
+<p>加上这样的提示后，豆包的讲解会更接地气，比如会用“水托起木头”之类的生活例子来解释。</p>
+<hr>
+<h2 id="三不同类型的提示方式">三、不同类型的提示方式</h2>
+<p>为了让模型更好地理解你的意图，可以采用不同类型的提示策略：</p>
+<ol>
+<li>
+<p>零样本提示（Zero-shot Prompting）</p>
+<ul>
+<li>不提供任何示例，只描述任务。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>“帮我写一条春节的祝福语。”</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>单样本提示（One-shot Prompting）</p>
+<ul>
+<li>提供一个范例，让模型模仿。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>例句：“祝您新春快乐，阖家团圆！”<br>
+请写一句风格相似的祝福语。</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>少样本提示（Few-shot Prompting）</p>
+<ul>
+<li>提供多个范例，引导模型学习格式或语气。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>示例 1：“愿新的一年好运连连。”<br>
+示例 2：“祝您岁岁平安笑开颜。”<br>
+请再写两句类似的祝福语。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<p>可以看出，给出更多例子往往能让模型“领会得更快”。</p>
+<hr>
+<h2 id="四几种思考方式的使用">四、几种思考方式的使用</h2>
+<p>让模型生成更高质量的内容，还可以结合不同的“思考策略”：</p>
+<ol>
+<li>
+<p>零样本思考（Zero-shot Reasoning）</p>
+<ul>
+<li>不提供任何例子，让模型自行推理。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>“小明有 3 个苹果，小红比他多 2 个，他们一共有几个？”<br>
+模型会根据理解直接推算出结果。</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>反思思考（Reflective Prompting）</p>
+<ul>
+<li>让模型检查并优化自己的回答。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>“请重新检查你的答案是否有逻辑错误，并改进。”</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>少样本思考（Few-shot Reasoning）</p>
+<ul>
+<li>用几个已知示例让模型学习如何推理。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>示例：2+3=5；4+5=9;<br>
+请说明 7+8 等于多少，并解释原因。</li>
+</ul>
+</blockquote>
+</li>
+<li>
+<p>迭代思考（Iterative Reasoning）</p>
+<ul>
+<li>通过多轮对话逐步改进提示词和结果。</li>
+<li>示例：</li>
+</ul>
+<blockquote>
+<ul>
+<li>第一次提示：“写一个春节祝福语。”<br>
+你觉得还不够热闹，可以再说：“请让祝福更喜庆，语气更热烈。”<br>
+模型再生成新的版本，如此反复，直到满意为止。</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<h2 id="五总结">五、总结</h2>
+<p>跟豆包说话，记住这五点：说清楚、说简单、先说要它干啥、多讲你想要什么、不满意就接着改。</p>
+<p>如果表达能力不佳，可以尝试向 ai 表达你的想法，然后让它总结下你的需求，如果不满意，就继续补充，如果 ai 回复了符合你想法的问题，就拿着这个问题重新开一个窗口，对话往往效果更佳（本人亲测好用）。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2026-02-24<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/JHvQdj3uLoJYPTx6bnYcrSRfnUf" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="随着科技的发展，我们的生活有了游戏的存在，而你在电脑里看到的任何 3D 物体，无论是游戏里的角色，还是电影里的飞船，其本质都是由无数个微小的三角形“面片”拼接而成的。 第一步：定位 - “三维空间”中的每个点都需要坐标 三角形有三个…"><title>一个有点意思的小科普--你的电脑的图像是怎么呈现的 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-snjbdw386olxcoxiwjcc03elnpa/"><meta property="og:title" content="一个有点意思的小科普--你的电脑的图像是怎么呈现的 · BINGLU"><meta property="og:description" content="随着科技的发展，我们的生活有了游戏的存在，而你在电脑里看到的任何 3D 物体，无论是游戏里的角色，还是电影里的飞船，其本质都是由无数个微小的三角形“面片”拼接而成的。 第一步：定位 - “三维空间”中的每个点都需要坐标 三角形有三个…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">开发实践</div><h1>一个有点意思的小科普--你的电脑的图像是怎么呈现的</h1><p class="quiet">胡守谦 · 2025-07-30 · 9 分钟</p><div class="prose"><blockquote>
+<p>随着科技的发展，我们的生活有了游戏的存在，而你在电脑里看到的任何 3D 物体，无论是游戏里的角色，还是电影里的飞船，其本质都是由无数个微小的三角形“面片”拼接而成的。</p>
+</blockquote>
+<p><strong>第一步：定位 - “三维空间”中的每个点都需要坐标</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/M3Pbb3NesolFXWxq1U2cpQHZnGh.webp" alt="文章配图"></p>
+<p>三角形有三个顶点。为了让电脑知道这个顶点在 3D 空间里的确切位置，我们需要给它一组 XYZ 坐标。这就像报出经度、纬度和海拔，确保每个点都能精准地“归位”，这样桌子才不会飞到天花板上。</p>
+<p>这简单的一句话背后，其实回答了一个根本性问题：<strong>电脑如何理解现实世界中的“空间”和“形状”？</strong></p>
+<p>电脑本身不认识“上下左右”，也不理解“桌子”或“人”，它只认识数字。因此，我们必须创造一个它能理解的、完全数学化的“虚拟空间”。</p>
+<ol>
+<li>
+<p><strong>建立参考系：笛卡尔坐标系</strong> 我们引入了你在数学课上非常熟悉的<strong>笛卡尔坐标系 （Cartesian Coordinate System）</strong>，但将其扩展到了三维。</p>
+<ul>
+<li><strong>原点 （Origin）</strong>：首先，我们在无限大的虚拟空间中定义一个绝对的中心点 <code>(0, 0, 0)</code>，它是一切测量的起点。</li>
+<li><strong>坐标轴 （Axes）</strong>：我们从原点出发，画出三条相互垂直的“尺子”，也就是 X、Y、Z 轴。它们分别定义了空间中的<strong>左右、上下、前后</strong>这三个基本维度。</li>
+<li><strong>坐标 （Coordinates）</strong>：现在，空间中任何一个点的位置，都可以用它在这三把“尺子”上的刻度值 <code>(x, y, z)</code> 来唯一确定。比如，<code>(5, 10, -20)</code> 就表示一个点在 X 轴正方向 5 个单位、Y 轴正方向 10 个单位、Z 轴负方向 20 个单位的地方。</li>
+</ul>
+</li>
+<li>
+<p><strong>从点到形：顶点、连线与三角形网格</strong> 有了坐标系，我们可以描述“点”了。但一个孤立的点没有意义，如何描述“形状”？答案是“连接”。</p>
+<ul>
+<li><strong>顶点 （Vertex）</strong>：我们先在物体的关键“拐角”处标记出一系列的点，并记录下它们的坐标。这些点就是模型的<strong>顶点</strong>。</li>
+<li><strong>索引列表 （Index List）</strong>：光有一堆顶点坐标，电脑看到的是一团“星云”，而不是一个模型。因此，我们还需要一张“连接说明书”，告诉电脑该如何连接这些点。这张说明书就是<strong>索引列表</strong>，它会说：“把第 1、第 5 和第 8 号顶点连起来，组成一个三角形”，“把第 5、第 9 和第 8 号顶点连起来，组成下一个三角形”……</li>
+<li><strong>三角形网格 （Triangle Mesh）</strong>：遵循这张“说明书”，电脑将顶点两两相连，最终构成无数个紧密贴合的三角形面片。这些面片组合在一起，就形成了我们所见的 3D 模型的表面，我们称之为<strong>三角形网格</strong>。</li>
+</ul>
+</li>
+<li>
+<p><strong>为什么是三角形？</strong> 之所以选择三角形作为基本单元，是因为它有几个无可替代的优点：</p>
+<ul>
+<li><strong>最简单的多边形</strong>：三个顶点就能确定一个面，不能再少了。</li>
+<li><strong>稳定性</strong>：三个顶点永远处于同一个平面（共面），这保证了渲染时不会出现奇怪的扭曲和“破面”。四边形或更多边的图形则可能不是平的。</li>
+<li><strong>万能性</strong>：任何复杂的三维曲面，都可以通过足够多的小三角形来无限逼近，模拟出想要的效果。</li>
+</ul>
+</li>
+</ol>
+<p>所以，“第一步：定位”，其本质是<strong>将一个具象的物体，通过坐标系、顶点和三角形连接规则，彻底“翻译”成电脑能够理解和处理的纯数字信息</strong>——也就是一个“数字蓝图”。</p>
+<p><strong>第二步：变形与移动 - 一切皆可“算”</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/SJrmbZW8AoTfbQxJkWHc79kLnjc.webp" alt="文章配图"></p>
+<p>想让模型动起来？比如旋转、缩放或者移动？这背后其实是强大的“矩阵运算”在发挥作用。你不需要理解复杂的数学，只要把它想象成一个“魔方”，你下达一个指令，电脑就通过一系列高效的加减乘除，瞬间计算出成千上万个顶点的新坐标。</p>
+<p>但这具体是如何在保证物体不变形的前提下做到的呢？</p>
+<p>在进入计算细节前，我们必须明确一个核心前提：我们操作的目标是<strong>整个物体</strong>，而非单个顶点。为了保持物体的形状不发生扭曲，任何变换指令（无论是移动、旋转还是缩放）都必须<strong>统一、同步地应用</strong>到构成该物体的<strong>所有顶点</strong>上。我们之所以能只关注顶点，是因为它们已经定义了物体的全部几何结构。这个过程就像指挥一个军训方阵，口令下达给全体，而每个人都执行相同的动作。最终，是 <strong>GPU 强大的并行计算能力</strong>，让这种对成千上万个顶点进行同步处理的浩大工程，变为了我们眼前流畅的实时画面。</p>
+<p>下面的示例将只展示对<strong>一个顶点</strong>的计算过程，来揭示其背后的数学规则。</p>
+<ol>
+<li><strong>移动（平移）</strong></li>
+</ol>
+<p>移动就是在原坐标的基础上进行加减。</p>
+<ul>
+<li>
+<p><strong>目标</strong>：将一个顶点 <code>(x, y, z)</code>，在 x 轴方向移动 <code>dx</code>，y 轴方向移动 <code>dy</code>，z 轴方向移动 <code>dz</code>。</p>
+</li>
+<li>
+<p><strong>具体公式</strong>：</p>
+</li>
+<li>
+<p>x 新=x 旧+dx</p>
+</li>
+<li>
+<p>y 新=y 旧+dy</p>
+</li>
+<li>
+<p>z 新=z 旧+dz</p>
+</li>
+<li>
+<p><strong>示例</strong>：</p>
+<ul>
+<li>
+<p>我们以物体上的<strong>其中一个顶点</strong> （10， 20， 30） 为例。。</p>
+</li>
+<li>
+<p>我们想让它向右（x）移动 5 个单位，向上（y）移动 10 个单位。所以 <code>dx=5</code>， <code>dy=10</code>， <code>dz=0</code>。</p>
+</li>
+<li>
+<p>计算：</p>
+<ul>
+<li>x 新=10+5=15</li>
+<li>y 新=20+10=30</li>
+<li>z 新=30+0=30</li>
+</ul>
+</li>
+<li>
+<p><strong>新坐标</strong>：<code>(15, 30, 30)</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong>缩放（变大变小）</strong></li>
+</ol>
+<p>缩放就是用原坐标乘以一个倍数。</p>
+<ul>
+<li>
+<p><strong>目标</strong>：将一个顶点 <code>(x, y, z)</code>，以原点（0，0，0）为中心，在 x、y、z 方向分别缩放 <code>sx</code>， <code>sy</code>， <code>sz</code> 倍。</p>
+</li>
+<li>
+<p><strong>具体公式</strong>：</p>
+</li>
+<li>
+<p>x 新=x 旧×sx</p>
+</li>
+<li>
+<p>y 新=y 旧×sy</p>
+</li>
+<li>
+<p>z 新=z 旧×sz</p>
+</li>
+<li>
+<p><strong>示例</strong>：</p>
+<ul>
+<li>
+<p>一个顶点在 <code>(10, 20, 30)</code>。</p>
+</li>
+<li>
+<p>我们想让它在 x 方向放大 1.5 倍，y 方向缩小到一半（0.5 倍），z 方向不变（1 倍）。所以 <code>sx=1.5</code>， <code>sy=0.5</code>， <code>sz=1</code>。</p>
+</li>
+<li>
+<p>计算：</p>
+<ul>
+<li>x 新=10×1.5=15</li>
+<li>y 新=20×0.5=10</li>
+<li>z 新=30×1=30</li>
+</ul>
+</li>
+<li>
+<p><strong>新坐标</strong>：<code>(15, 10, 30)</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong>旋转</strong></li>
+</ol>
+<p>旋转使用三角函数 <code>sin</code> 和 <code>cos</code>。电脑内置了这些函数的值，可以直接调用。以下是<strong>绕着 Z 轴</strong>逆时针旋转 <code>θ</code> 度的公式（可以想象成在 x-y 平面上旋转）。</p>
+<ul>
+<li>
+<p><strong>目标</strong>：将一个顶点 <code>(x, y, z)</code>，绕 Z 轴旋转 <code>θ</code> 度。</p>
+</li>
+<li>
+<p><strong>具体公式</strong>：</p>
+</li>
+<li>
+<p>x 新=（x 旧×cos（θ））−（y 旧×sin（θ））</p>
+</li>
+<li>
+<p>y 新=（x 旧×sin（θ））+（y 旧×cos（θ））</p>
+</li>
+<li>
+<p>z 新=z 旧（因为是绕 Z 轴转，所以 z 坐标不变）</p>
+</li>
+<li>
+<p><strong>示例</strong>：</p>
+<ul>
+<li>
+<p>一个顶点在 <code>(10, 20, 30)</code>。</p>
+</li>
+<li>
+<p>我们想让它绕 Z 轴旋转 90 度。我们在数学课学过：<code>cos(90°) = 0</code>，<code>sin(90°) = 1</code>。</p>
+</li>
+<li>
+<p>计算：</p>
+<ul>
+<li>x 新=（10×0）−（20×1）=0−20=−20</li>
+<li>y 新=（10×1）+（20×0）=10+0=10</li>
+<li>z 新=30</li>
+</ul>
+</li>
+<li>
+<p><strong>新坐标</strong>：<code>(-20, 10, 30)</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>第三步：渲染优化 - 只画“看得到”的，才是最聪明的</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/ESegbBVcRo4FJBxeSD3cw8wZn2c.webp" alt="文章配图"></p>
+<p>现在，所有顶点都就位了，但电脑并不会“傻瓜式”地画出每一个三角形。为了让画面更流畅（也就是提高帧率），它会像一个聪明的摄像师一样思考：</p>
+<ol>
+<li><strong>“看不见的背面就不画了”</strong> 一个不透明的物体，你永远只能看到它朝向你的那一面。电脑会做一个简单的方向判断，把所有背对你的三角形都直接忽略，根本不画它们。</li>
+<li><strong>“被挡住的东西也不画”</strong> 如果一棵树挡住了一座房子，你只能看到树，看不到树后面的房子。电脑也是这样。它在画每个像素点时，都会“记笔记”，记下这个点上已经画了的物体的远近（z 坐标）。</li>
+</ol>
+<ul>
+<li>当它准备画一个新的物体时，会先比较一下：“这个新物体比我已经画在这里的更近吗？”</li>
+<li><strong>如果更近</strong>：就用新物体的颜色覆盖掉原来的，并更新笔记。</li>
+<li><strong>如果更远</strong>：那就说明它被挡住了，直接跳过不画。</li>
+</ul>
+<p><strong>总结一下：</strong> 3D 游戏的每时每刻，电脑都在做三件事：</p>
+<ol>
+<li><strong>几何定位</strong>：用 <code>(x, y, z)</code> 坐标描述一个由三角形组成的世界。</li>
+<li><strong>代数运算</strong>：用简单的 <code>加减乘除</code> 和 <code>sin/cos</code> 公式，来计算所有顶点移动、缩放、旋转后的新位置。</li>
+<li><strong>逻辑判断</strong>：用聪明的“画家”逻辑，只画那些我们最终能看得到的部分。</li>
+</ol>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-07-30<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/SnJbdw386oLxCoxIWJcc03ELnpa" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

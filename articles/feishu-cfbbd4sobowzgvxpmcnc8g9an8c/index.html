@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="蒙特卡洛方法（Monte Carlo Method）是一类利用随机抽样来近似解决复杂数学或计算问题的方法。核心思想是： 当一个问题的搜索空间太大、太复杂、传统分析或精确计算难以进行时，可以通过大量随机样本来估计整体的统计特性，从而获…"><title>浅显易懂 理解 蒙特卡洛树搜索（MCTS） · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-cfbbd4sobowzgvxpmcnc8g9an8c/"><meta property="og:title" content="浅显易懂 理解 蒙特卡洛树搜索（MCTS） · BINGLU"><meta property="og:description" content="蒙特卡洛方法（Monte Carlo Method）是一类利用随机抽样来近似解决复杂数学或计算问题的方法。核心思想是： 当一个问题的搜索空间太大、太复杂、传统分析或精确计算难以进行时，可以通过大量随机样本来估计整体的统计特性，从而获…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">强化学习</div><h1>浅显易懂 理解 蒙特卡洛树搜索（MCTS）</h1><p class="quiet">胡守谦 · 2025-12-05 · 6 分钟</p><details class="article-toc"><summary>本文目录 · 4 节</summary><nav aria-label="本文目录"><a href="#什么是蒙特卡洛树搜索" style="padding-left:0px">什么是蒙特卡洛树搜索？</a><a href="#基本思想" style="padding-left:0px">基本思想</a><a href="#核心步骤" style="padding-left:0px">核心步骤</a><a href="#蒙特卡洛树搜索的应用" style="padding-left:0px">蒙特卡洛树搜索的应用</a></nav></details><div class="prose"><p><strong>蒙特卡洛方法</strong>（Monte Carlo Method）是一类利用<em>随机抽样</em>来近似解决复杂数学或计算问题的方法。核心思想是：</p>
+<blockquote>
+<p>当一个问题的搜索空间太大、太复杂、传统分析或精确计算难以进行时，可以通过大量随机样本来估计整体的统计特性，从而获得近似结果。</p>
+</blockquote>
+<p>例如：用随机点来估计π 、用随机模拟来估计概率分布、用随机路径来评估系统的未来状态等等。</p>
+<h2 id="什么是蒙特卡洛树搜索"><strong>什么是蒙特卡洛树搜索？</strong></h2>
+<p>当搜索空间很小、可行路径不多时，我们可以用穷举法遍历所有可能路径，从而找到最优解。但在很多实际问题中，存在成千上万条路径，而每条路径再划分出各自分支后，搜索树会变得极其庞大，这样会消耗大量时间资源，任何计算机都无法在有限时间内完整遍历整棵树。</p>
+<p>统计学告诉我们，可以通过随机抽样的方式，用少量样本来估计整体的平均情况，而不必穷举所有可能。蒙特卡洛树搜索（Monte Carlo Tree Search， MCTS）就是基于这一思想的一种树搜索方法：它在一棵搜索树上，利用随机模拟来估计各条分支的好坏，并逐渐把计算资源集中到更有前途的分支上。</p>
+<h2 id="基本思想">基本思想</h2>
+<ul>
+<li>不再像传统搜索那样穷举所有分支，而是通过大量随机或半随机的模拟对局来估计每个动作的好坏：从当前局面一路“走到结束”，观察最终是胜是负。</li>
+<li>在搜索过程中，统计每个动作被尝试的次数及其平均胜率，让搜索逐渐偏向“看起来更有希望”的分支。这样，即使在巨大的状态空间中，也能在有限时间内得到一个质量较高的决策，而不必真正找到全局最优解。</li>
+</ul>
+<p><img src="/cbsyy.github.io/media/feishu/CP3Lb7QINolj4uxx0mUcBaKlnVe.webp" alt="文章配图"></p>
+<h2 id="核心步骤">核心步骤</h2>
+<p>MCTS 一般分为四个步骤：选择 → 扩展 → 模拟 → 回传</p>
+<p><strong>选择</strong>：从根节点开始，在当前节点已经展开出来的子节点中，用“平均得分 + 探索奖励”的打分规则选择下一个节点：平均得分高的更容易被选中，访问次数少的也会因为探索奖励得到照顾，从而在“探索”和“利用”之间取得平衡；按这个规则一路往下走，直到到达一个终局节点，或者一个还有未尝试动作的节点，在那里停下。</p>
+<p>在当前节点中进行选择，如果当前所有路径都选过，就偏向于选择高分节点，如果还有节点没选，就偏向于选择未走节点，兼顾探索与利用。</p>
+<p><strong>扩展</strong>：如果当前节点不是终局，并且仍有未尝试的动作，就从这些动作中选择一个，扩展出对应的新子节点。把这条新路线加入到搜索树里，后续模拟将从这个新子节点开始。</p>
+<p><strong>模拟</strong>：从新节点快速模拟到最终结果，然后输出一个结果得分（例如胜负或具体分数）。</p>
+<p><strong>回传</strong>：当任务结束，将这次模拟的结果得分，从新子节点一路向上回传到根节点，更新路径上每个节点的访问次数和累计/平均得分，使得之后的“选择”步骤更偏向那些平均表现更好、同时仍保留对不太熟分支的探索。</p>
+<p><img src="/cbsyy.github.io/media/feishu/XojpbpkcEoV6cOxUBTJcNwCgnKh.webp" alt="文章配图"></p>
+<p>一套流程可以表示为：</p>
+<p>在每次迭代中，算法从根节点出发，按照当前的策略依次向下<strong>选择</strong>子节点；<br>
+一旦走到一个还有未尝试动作的节点，就从中选一个动作进行<strong>扩展</strong>，生成一个新的子节点；<br>
+然后从这个新节点开始，<strong>快速模拟</strong>到终局，得到本次模拟的回报；<br>
+最后将这次回报沿路径<strong>回传</strong>回去，更新相关节点的统计信息。<br>
+通过不断重复这一过程，搜索会越来越集中在表现更好的分支上，从而在有限时间内找到一个质量很高的决策。</p>
+<p>优点：</p>
+<p>1、适合超大搜索空间，不用均匀展开完整的树结构，只需关注核心树结构的情况。</p>
+<p>2、因为是迭代式算法，多一次迭代就多一点信息。所以随时可停，很适合需要有时间限制的情况下使用。</p>
+<p>3、自动平衡「探索 vs 利用」， UCT / PUCT 这类公式可兼顾探索利用，避免未被探索的分支被边缘化，陷入局部最优解。</p>
+<p>缺点：</p>
+<p>1、因为需要走到终点，所以必须能从某个状态开始模拟下一步状态，如果环境不支持，或者环境复杂不能很好模拟，效果就会差劲。</p>
+<p>2、即使不用穷举，仍然需要靠多次迭代找最佳值，迭代次数不多，依然效果不好。</p>
+<p>3、对于某些复杂场景环境，模拟质量不好，就会翻车。</p>
+<h2 id="蒙特卡洛树搜索的应用"><strong>蒙特卡洛树搜索的应用</strong></h2>
+<p>常常在围棋 AI、强化学习、路径规划、游戏 AI 等领域应用广泛，比如下棋就是一个经典的例子，其实下棋的过程就是个<strong>马尔科夫决策过程（MDP），可参考之前文章：</strong></p>
+<p><bookmark name="mp.weixin.qq.com" href="https://mp.weixin.qq.com/s/O8-onAsDxVzAY-zTrdbLLg"></bookmark></p>
+<p>根据当前棋面状态，确定下一步动作。由于下棋的状态空间千变万化，无法穷举，就可通过蒙特卡洛树搜索，用少量随机路径，逐步逼近真正的最优决策。</p>
+<p>参考链接：</p>
+<ul>
+<li><a href="https://www.zywvvd.com/pages/go.html?goUrl=https%3A%2F%2Fwww.cnblogs.com%2FLittleHann%2Fp%2F11608182.html">https</a><a href="https://www.zywvvd.com/pages/go.html?goUrl=https%3A%2F%2Fwww.cnblogs.com%2FLittleHann%2Fp%2F11608182.html">://www.cnblogs.com/LittleHann/p/11608182.html</a></li>
+<li><a href="https://www.zywvvd.com/pages/go.html?goUrl=https%3A%2F%2Fyey.world%2F2020%2F05%2F05%2FCOMP90054-08%2F">https://yey.world/2020/05/05/COMP90054-08/</a></li>
+<li><a href="https://www.zywvvd.com/pages/go.html?goUrl=https%3A%2F%2Fwww.jiqizhixin.com%2Farticles%2Fmonte-carlo-tree-search-beginners-guide">https://www.jiqizhixin.com/articles/monte-carlo-tree-search-beginners-guide</a></li>
+<li><a href="https://www.zywvvd.com/notes/study/search/mcts/mcts/">https://www.zywvvd.com/notes/study/search/mcts/mcts/</a></li>
+<li><a href="https://aijishu.com/a/1060000000089474">https://aijishu.com/a/1060000000089474</a></li>
+<li><a href="https://www.juhe.cn/news/index/id/10360">https://www.juhe.cn/news/index/id/10360</a></li>
+<li><a href="https://www.cnblogs.com/pinard/p/10470571.html">https://www.cnblogs.com/pinard/p/10470571.html</a></li>
+<li><a href="https://blog.csdn.net/caozixuan98724/article/details/103213795">https://blog.csdn.net/caozixuan98724/article/details/103213795</a></li>
+</ul>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-12-05<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/CFbBd4SoBoWZgVxpMCNc8G9An8c" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

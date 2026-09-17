@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://vic-ice.github.io/cbsyy.github.io/sitemap.xml

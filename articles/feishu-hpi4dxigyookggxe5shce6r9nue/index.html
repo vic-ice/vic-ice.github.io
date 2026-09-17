@@ -1,0 +1,43 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="核心观点 - 定义：迁移学习 （Transfer Learning） 是一种机器学习技术，它将一个在大型数据集（源任务）上预训练好的模型，应用到一个新的、相关的目标任务（通常数据量较少）上。 - 目标：解决目标任务训练数据不足的问题…"><title>一文搞定迁移学习（上）：核心思想与通用流程 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-hpi4dxigyookggxe5shce6r9nue/"><meta property="og:title" content="一文搞定迁移学习（上）：核心思想与通用流程 · BINGLU"><meta property="og:description" content="核心观点 - 定义：迁移学习 （Transfer Learning） 是一种机器学习技术，它将一个在大型数据集（源任务）上预训练好的模型，应用到一个新的、相关的目标任务（通常数据量较少）上。 - 目标：解决目标任务训练数据不足的问题…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">大模型与深度学习</div><h1>一文搞定迁移学习（上）：核心思想与通用流程</h1><p class="quiet">胡守谦 · 2025-09-02 · 5 分钟</p><details class="article-toc"><summary>本文目录 · 3 节</summary><nav aria-label="本文目录"><a href="#核心观点" style="padding-left:28px">核心观点</a><a href="#详细阐述" style="padding-left:28px">详细阐述</a><a href="#总结" style="padding-left:28px">总结</a></nav></details><div class="prose"><h4 id="核心观点"><strong>核心观点</strong></h4>
+<ul>
+<li><strong>定义</strong>：迁移学习 （Transfer Learning） 是一种机器学习技术，它将一个在大型数据集（源任务）上预训练好的模型，应用到一个新的、相关的目标任务（通常数据量较少）上。</li>
+<li><strong>目标</strong>：解决目标任务训练数据不足的问题，同时提高训练效率和模型性能。</li>
+<li><strong>核心机制</strong>：复用预训练模型已经学到的通用特征提取能力（如图像的边、角、纹理），再通过少量新数据对模型的特定部分进行微调，使其适应新任务。</li>
+<li><strong>经典比喻</strong>：这种方法好比“站在巨人的肩膀上”，我们无需从零开始学习，而是基于前人已经总结好的知识进行再创造。</li>
+</ul>
+<h4 id="详细阐述"><strong>详细阐述</strong></h4>
+<ol>
+<li><strong>什么是迁移学习？</strong></li>
+</ol>
+<p>迁移学习是机器学习的一个重要分支。其核心思想是将在一个大规模数据集（如 ImageNet，包含上百万张各类图片）上训练好的模型（称为<strong>预训练模型</strong>，Pre-trained Model），将其学到的“知识”迁移到我们自己新的、数据量不足的相关任务上。</p>
+<ol>
+<li><strong>核心原理与流程</strong></li>
+</ol>
+<p>整个过程通常分为两个阶段：</p>
+<ul>
+<li>
+<p><strong>预训练 （Pre-training）</strong>：在一个庞大的、通用的数据集上训练一个深度神经网络（例如，一个在数千种物体图片上训练好的模型 A）。这个模型在训练过程中会学到从低级到高级的层次化特征。对于图像识别而言，底层网络可能学会识别颜色、边缘和纹理，而高层网络则可能学会识别更复杂的形状或物体部件。这些学到的权重 （W 和 b） 包含了关于数据世界的通用知识。</p>
+</li>
+<li>
+<p><strong>微调 （Fine-tuning）</strong>：在预训练之后，我们便进入了关键的微调阶段。这个过程的精髓可以通过下图清晰地展现：当我们面临一个数据量较少的新任务时（例如，一个只有几百张牛羊图片的识别任务），我们不必从头开始。而是通过以下步骤对预训练模型（模型 A）进行微调，以得到最终为新任务量身定制的模型（模型 B）：通过这个流程，最终得到的模型 B 就是一个在保留通用知识的同时，又具备了识别牛羊特定能力的高效模型。</p>
+<p><img src="/cbsyy.github.io/media/feishu/P94Yb0qpQoImUMxNn0tcyF6Inqf.webp" alt="文章配图"></p>
+<ul>
+<li><strong>加载模型并冻结主干</strong>：我们首先加载预训练模型 A，并将其大部分网络层<strong>冻结</strong>。这些被冻结的层将作为固定的“<strong>特征提取器</strong>”，保留其从大规模数据中学到的通用知识（如识别边缘、纹理和形状）。</li>
+<li><strong>改造模型头部</strong>：接着，我们<strong>移除</strong>模型原有的、针对源任务的输出层（即“头部”），并替换为一个为新任务定制的、未训练的<strong>新头部</strong>。例如，将一个能识别 1000 种物体的分类器，换成一个只识别“牛”和“羊”的二分类器。</li>
+<li><strong>训练新头部</strong>：在训练阶段，我们<strong>只更新这个新增头部的参数</strong>。由于只需训练少量参数，这个过程非常高效，能让模型快速学习如何利用前端提取的通用特征来完成新任务。</li>
+<li><strong>（可选）整体微调</strong>：对于更复杂的任务，可以采取一种更灵活的策略来追求更高性能。即在完成上述步骤后，<strong>解冻</strong>预训练模型的最后几个高层网络，并用一个极小的学习率对它们进行同步训练。这能让模型的高级特征也更好地适应新数据，但会增加模型复杂度和过拟合的风险。</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><strong>何时应该使用迁移学习？</strong></li>
+</ol>
+<p>迁移学习并非万能，在以下场景中它会表现得尤为出色：</p>
+<ul>
+<li><strong>目标任务数据量小</strong>：当你的新任务只有几百或几千个样本，不足以从零开始训练一个复杂的深度模型时，迁移学习是最佳选择。如果数据量足够大（如数万、数十万），从头训练可能效果更好。</li>
+<li><strong>源任务与目标任务相关</strong>：预训练模型所用的数据类型应与新任务一致。例如，在图像领域（图像到图像）、自然语言处理领域（文本到文本）或音频领域（音频到音频）进行迁移，效果会非常显著。如果源任务和目标任务毫不相关（如用图像模型去处理文本），迁移学习将失去意义。</li>
+<li><strong>源任务数据规模远大于目标任务</strong>：预训练模型必须在比目标任务数据量大得多的数据集上训练，这样它学到的通用特征才足够丰富和稳固。</li>
+</ul>
+<h4 id="总结"><strong>总结</strong></h4>
+<p>总而言之，迁移学习是一种高效且强大的技术。它通过复用一个强大模型已经学到的知识，让我们能够用较少的数据和计算资源，快速构建出在特定任务上表现优异的新模型。其中，我们利用的模型 A 就是<strong>预训练模型</strong>，而基于它构建新模型 B 的过程就是<strong>微调</strong>。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-09-02<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/Hpi4dXiGyoOKgGxe5shce6R9nUe" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

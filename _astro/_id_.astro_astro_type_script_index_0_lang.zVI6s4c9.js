@@ -1,0 +1,1 @@
+import{t as e}from"./urls.CSbU58PB.js";var t=new URLSearchParams(location.search).get(`status`);t&&[`reading`,`read`,`want`].includes(t)&&(document.querySelector(`#shelf-back`).href=e(`/shelf/?status=`)+t);

@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Git 协作开发完整操作手册 Git 团队协作速成指南：10分钟从菜鸟到高手 团队开发中，Git 是每位程序员必备的技能。但对于新手来说，各种分支、拉取、推送的操作常常让人望而生畏。别担心，这份实操指南将带你清晰理解整个协作流程，让…"><title>Git 协作开发完整操作手册 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-uhyhdbadrol18excnm0cvapdnab/"><meta property="og:title" content="Git 协作开发完整操作手册 · BINGLU"><meta property="og:description" content="Git 协作开发完整操作手册 Git 团队协作速成指南：10分钟从菜鸟到高手 团队开发中，Git 是每位程序员必备的技能。但对于新手来说，各种分支、拉取、推送的操作常常让人望而生畏。别担心，这份实操指南将带你清晰理解整个协作流程，让…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">开发实践</div><h1>Git 协作开发完整操作手册</h1><p class="quiet">胡守谦 · 2025-04-18 · 5 分钟</p><details class="article-toc"><summary>本文目录 · 19 节</summary><nav aria-label="本文目录"><a href="#git-团队协作速成指南10分钟从菜鸟到高手" style="padding-left:0px">Git 团队协作速成指南：10分钟从菜鸟到高手</a><a href="#团队协作流程图解" style="padding-left:0px">团队协作流程图解</a><a href="#一git-协作开发基本概念" style="padding-left:0px">一、Git 协作开发基本概念</a><a href="#通俗解释" style="padding-left:14px">通俗解释：</a><a href="#二从零开始的git协作流程" style="padding-left:0px">二、从零开始的Git协作流程</a><a href="#1-获取项目代码" style="padding-left:14px">1. 获取项目代码</a><a href="#2-建立与原始仓库的连接" style="padding-left:14px">2. 建立与原始仓库的连接</a><a href="#3-开发新功能" style="padding-left:14px">3. 开发新功能</a><a href="#4-处理可能的代码冲突" style="padding-left:14px">4. 处理可能的代码冲突</a><a href="#5-推送并创建pull-request" style="padding-left:14px">5. 推送并创建Pull Request</a><a href="#三高级git技巧merge-vs-rebase" style="padding-left:0px">三、高级Git技巧：merge vs. rebase</a><a href="#merge合并" style="padding-left:14px">merge（合并）</a><a href="#rebase变基" style="padding-left:14px">rebase（变基）</a><a href="#四常见问题与解决方案" style="padding-left:0px">四、常见问题与解决方案</a><a href="#1-我推送代码时被拒绝了" style="padding-left:14px">1. “我推送代码时被拒绝了！”</a><a href="#2-我想撤销上一次提交" style="padding-left:14px">2. “我想撤销上一次提交！”</a><a href="#3-我提交了代码到错误的分支" style="padding-left:14px">3. “我提交了代码到错误的分支！”</a><a href="#五团队协作实用命令小抄" style="padding-left:0px">五、团队协作实用命令小抄</a><a href="#结语" style="padding-left:0px">结语</a></nav></details><div class="prose"><title>Git 协作开发完整操作手册</title>
+<h1 id="git-团队协作速成指南10分钟从菜鸟到高手">Git 团队协作速成指南：10分钟从菜鸟到高手</h1>
+<p>团队开发中，Git 是每位程序员必备的技能。但对于新手来说，各种分支、拉取、推送的操作常常让人望而生畏。别担心，这份实操指南将带你清晰理解整个协作流程，让你轻松应对团队开发中的各种场景。</p>
+<h2 id="团队协作流程图解">团队协作流程图解</h2>
+<p><img src="/cbsyy.github.io/media/feishu/SY4JbsyEromONGxNuxcclg2lnKe.webp" alt="文章配图"></p>
+<h2 id="一git-协作开发基本概念">一、Git 协作开发基本概念</h2>
+<p>在开始实操前，让我们先理清几个关键概念：</p>
+<ul>
+<li><strong>原始仓库(Upstream)</strong>: 项目的官方仓库，你需要贡献代码的目标仓库</li>
+<li><strong>Fork仓库(Origin)</strong>: 你在GitHub上复制的原始仓库副本</li>
+<li><strong>本地仓库(Local)</strong>: 克隆到你电脑上的代码库</li>
+<li><strong>分支(Branch)</strong>: 独立的开发线，让你可以隔离开发不同功能</li>
+<li><strong>PR(Pull Request)</strong>: 请求将你的代码合并到原始仓库的申请</li>
+</ul>
+<h3 id="通俗解释"><strong>通俗解释：</strong></h3>
+<ol>
+<li>
+<p>fork：</p>
+<ul>
+<li>想象你在网上看到一个很酷的项目，你想参与其中，但不想直接在原项目上乱改。于是你点击“fork”按钮，复制了一份项目到你自己的账号下，这样你就可以自由地修改了。</li>
+</ul>
+</li>
+<li>
+<p>clone：</p>
+<ul>
+<li>现在你有了项目的副本，但只存在于网上。“clone”就是把这份网上的项目复制一份到你的电脑上，这样你就可以在本地进行编辑了。</li>
+</ul>
+</li>
+<li>
+<p>branch：</p>
+<ul>
+<li>项目里有很多代码，你可能只想改其中一小部分。“branch”就是创建一个分支，让你可以在这个分支上工作，而不会影响到其他的代码。</li>
+</ul>
+</li>
+<li>
+<p>develop：</p>
+<ul>
+<li>现在你有了自己的分支，你可以开始在这个分支上“develop”，也就是编写和测试你的代码了。</li>
+</ul>
+</li>
+<li>
+<p>add：</p>
+<ul>
+<li>你写好了一些代码，准备保存。“add”就是把你的新代码或者修改过的代码标记起来，告诉Git：“这些是我接下来想要保存的更改”。</li>
+</ul>
+</li>
+<li>
+<p>commit：</p>
+<ul>
+<li>你已经用“add”标记了你想要保存的更改，现在用“commit”来实际保存这些更改。这就像是给项目打上一个快照，记录下你在这个时间点的代码状态。</li>
+</ul>
+</li>
+<li>
+<p>pull：</p>
+<ul>
+<li>在你编写代码的同时，可能其他人也在项目的主分支上做了一些更改。“pull”就是把那些最新的更改下载到你的电脑上，这样你的代码就能保持最新。</li>
+</ul>
+</li>
+<li>
+<p>push：</p>
+<ul>
+<li>你已经完成了你的更改，并且保存了（commit）。现在用“push”把这些更改上传到你在网上的fork项目中，这样其他人就能看到你做了什么。</li>
+</ul>
+</li>
+<li>
+<p>PR (Pull Request)：</p>
+<ul>
+<li>你想要把你的更改合并到项目的主分支中。“PR”就是你向项目维护者发出的一个请求，说：“嘿，看看我的更改，能不能把它们合并到主项目里？”</li>
+</ul>
+</li>
+</ol>
+<h2 id="二从零开始的git协作流程">二、从零开始的Git协作流程</h2>
+<h3 id="1-获取项目代码">1. 获取项目代码</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. 在GitHub上fork项目到自己的账号</span></span>
+<span class="line"><span style="color:#6A737D"># (在原始仓库页面点击右上角的"Fork"按钮)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. 将fork的仓库克隆到本地</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> clone</span><span style="color:#9ECBFF"> https://github.com/你的GitHub用户名/项目名称.git</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. 进入项目目录</span></span>
+<span class="line"><span style="color:#79B8FF">cd</span><span style="color:#9ECBFF"> 项目名称</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. 查看当前分支</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> branch</span></span></code></pre>
+<p><strong>实用提示</strong>: 克隆完成后，你的本地仓库默认只关联了你的fork仓库(origin)，而不是原始仓库。这就是为什么我们需要下一步。</p>
+<h3 id="2-建立与原始仓库的连接">2. 建立与原始仓库的连接</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 添加原始仓库作为远程仓库，命名为"upstream"</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> remote</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> upstream</span><span style="color:#9ECBFF"> https://github.com/原始作者/项目名称.git</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 验证远程仓库设置</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> remote</span><span style="color:#79B8FF"> -v</span></span></code></pre>
+<p>执行后，你应该能看到两个远程仓库：</p>
+<ul>
+<li><strong>origin</strong>: 指向你的fork仓库</li>
+<li><strong>upstream</strong>: 指向原始仓库</li>
+</ul>
+<h3 id="3-开发新功能">3. 开发新功能</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 1. 先同步原始仓库的最新代码</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> pull</span><span style="color:#9ECBFF"> upstream</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. 创建并切换到新的功能分支</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#79B8FF"> -b</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. 开发你的功能...</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. 提交你的更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> .</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "添加了一个很棒的功能"</span></span></code></pre>
+<p><strong>实用提示</strong>: 分支命名建议使用有意义的前缀，如<code>feature/</code>、<code>bugfix/</code>、<code>hotfix/</code>或你的名字如<code>alex/</code>。</p>
+<h3 id="4-处理可能的代码冲突">4. 处理可能的代码冲突</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 在推送前，先同步原始仓库的最新变化</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> pull</span><span style="color:#9ECBFF"> upstream</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 切回你的功能分支</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 合并主分支的更改（可能会有冲突）</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> merge</span><span style="color:#9ECBFF"> main</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 如果有冲突，解决冲突后</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> add</span><span style="color:#9ECBFF"> .</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> commit</span><span style="color:#79B8FF"> -m</span><span style="color:#9ECBFF"> "解决合并冲突"</span></span></code></pre>
+<h3 id="5-推送并创建pull-request">5. 推送并创建Pull Request</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 推送到你的fork仓库</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span><span style="color:#9ECBFF"> origin</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span></code></pre>
+<p>然后到GitHub网页上，在你的fork仓库中点击“Compare &amp; pull request”按钮，填写PR描述后提交。</p>
+<h2 id="三高级git技巧merge-vs-rebase">三、高级Git技巧：merge vs. rebase</h2>
+<p>在处理团队协作时，你可以使用两种方式整合代码：merge和rebase。</p>
+<h3 id="merge合并">merge（合并）</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> merge</span><span style="color:#9ECBFF"> main</span></span></code></pre>
+<p>特点：</p>
+<ul>
+<li>保留完整历史记录</li>
+<li>一次性处理所有冲突</li>
+<li>适合公共分支</li>
+</ul>
+<h3 id="rebase变基">rebase（变基）</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> rebase</span><span style="color:#9ECBFF"> main</span></span></code></pre>
+<p>特点：</p>
+<ul>
+<li>创建更干净的提交历史</li>
+<li>逐个提交处理冲突</li>
+<li>适合整理个人分支</li>
+</ul>
+<p><strong>黄金法则</strong>: 永远不要对已推送到公共仓库的提交使用rebase，这会改变历史记录，给其他开发者带来麻烦。</p>
+<h2 id="四常见问题与解决方案">四、常见问题与解决方案</h2>
+<h3 id="1-我推送代码时被拒绝了">1. “我推送代码时被拒绝了！”</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 可能是因为远程仓库有新提交，先拉取最新代码</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> pull</span><span style="color:#9ECBFF"> origin</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 解决冲突后重新推送</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> push</span><span style="color:#9ECBFF"> origin</span><span style="color:#9ECBFF"> feature/amazing-feature</span></span></code></pre>
+<h3 id="2-我想撤销上一次提交">2. “我想撤销上一次提交！”</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 撤销上一次提交，但保留更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> reset</span><span style="color:#79B8FF"> --soft</span><span style="color:#9ECBFF"> HEAD~1</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 彻底撤销上一次提交及更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> reset</span><span style="color:#79B8FF"> --hard</span><span style="color:#9ECBFF"> HEAD~1</span></span></code></pre>
+<h3 id="3-我提交了代码到错误的分支">3. “我提交了代码到错误的分支！”</h3>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 保存当前更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> stash</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 切换到正确的分支</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#9ECBFF"> correct-branch</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 应用之前的更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> stash</span><span style="color:#9ECBFF"> apply</span></span></code></pre>
+<h2 id="五团队协作实用命令小抄">五、团队协作实用命令小抄</h2>
+<p>bash</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># 查看当前状态</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> status</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 查看提交历史</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> log</span><span style="color:#79B8FF"> --oneline</span><span style="color:#79B8FF"> --graph</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 查看某个文件的修改历史</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> blame</span><span style="color:#9ECBFF"> filename</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 临时保存工作区更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> stash</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 恢复临时保存的更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> stash</span><span style="color:#9ECBFF"> pop</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 放弃所有本地更改</span></span>
+<span class="line"><span style="color:#B392F0">git</span><span style="color:#9ECBFF"> checkout</span><span style="color:#79B8FF"> --</span><span style="color:#9ECBFF"> .</span></span></code></pre>
+<h2 id="结语">结语</h2>
+<p>Git协作开发看似复杂，其实掌握了核心流程后非常直观。记住这个基本流程：fork → clone → branch → develop → pull → push → PR，你就能应对大部分团队协作场景。</p>
+<p>随着你的实践经验增加，你会发现Git不仅是一个版本控制工具，更是提高团队协作效率的得力助手。希望这份指南能帮助你在团队项目中游刃有余！</p>
+<p>如果你有任何问题或建议，欢迎在评论区留言讨论！</p>
+<hr>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-04-18<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/UhyhdbADrol18excnM0cVApDnAb" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

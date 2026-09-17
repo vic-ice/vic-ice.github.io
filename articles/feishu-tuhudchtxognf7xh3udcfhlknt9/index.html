@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="n8n 是什么意思？ 它的意思是“节点”，发音为 n-eight-n。顾名思义，是个工作流。 Dify 与 n8n 核心功能与定位 Dify 作为专注于大型语言模型（LLM）应用开发的平台，其核心在于简化 AI 应用的创建，包括可视…"><title>五分钟 傻瓜式部署 N8n 以及汉化，开玩！！！ · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-tuhudchtxognf7xh3udcfhlknt9/"><meta property="og:title" content="五分钟 傻瓜式部署 N8n 以及汉化，开玩！！！ · BINGLU"><meta property="og:description" content="n8n 是什么意思？ 它的意思是“节点”，发音为 n-eight-n。顾名思义，是个工作流。 Dify 与 n8n 核心功能与定位 Dify 作为专注于大型语言模型（LLM）应用开发的平台，其核心在于简化 AI 应用的创建，包括可视…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">开发实践</div><h1>五分钟 傻瓜式部署 N8n 以及汉化，开玩！！！</h1><p class="quiet">胡守谦 · 2025-06-13 · 6 分钟</p><details class="article-toc"><summary>本文目录 · 3 节</summary><nav aria-label="本文目录"><a href="#n8n-是什么意思" style="padding-left:0px">n8n 是什么意思？</a><a href="#dify-与-n8n-核心功能与定位" style="padding-left:0px">Dify 与 n8n 核心功能与定位</a><a href="#n8n-受欢迎的关键因素" style="padding-left:0px">n8n 受欢迎的关键因素</a></nav></details><div class="prose"><h2 id="n8n-是什么意思">n8n 是什么意思？</h2>
+<p>它的意思是“<strong>节点</strong>”，发音为 n-eight-n。顾名思义，是个<strong>工作流</strong>。</p>
+<h2 id="dify-与-n8n-核心功能与定位">Dify 与 n8n 核心功能与定位</h2>
+<p><strong>Dify</strong> 作为专注于大型语言模型（LLM）应用开发的平台，其核心在于简化 AI 应用的创建，包括可视化工作流、RAG 管道、模型管理和可观测性。它特别适合构建 AI 原生应用，如智能客服或基于内部文档的问答系统。而 <strong>n8n</strong> 则是一个低代码、事件驱动的通用工作流自动化工具，擅长连接各种应用和服务，构建复杂的自动化流程，其 AI 功能更多是作为其广泛工作流中的一个强大<strong>组件</strong>。</p>
+<h2 id="n8n-受欢迎的关键因素">n8n 受欢迎的关键因素</h2>
+<p><strong>n8n</strong> 广受欢迎的关键在于其开放源代码和强大的自托管能力，这赋予用户对数据和系统行为的完全控制权，并有助于满足隐私法规要求。其“fair-code”分发模式保证了代码的可见性和自托管的灵活性。此外，<strong>n8n</strong> 的低代码可视化界面与高度可扩展性（支持自定义节点和脚本）相结合，使其能够适应从简单任务到复杂企业级自动化的广泛需求，并且其不按任务收费的模式也使其在大规模应用中更具成本效益。</p>
+<p>这个对比表就很清晰了</p>
+<table>
+<thead>
+<tr>
+<th>特性维度</th>
+<th>Dify</th>
+<th>n8n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>主要用途</strong></td>
+<td>LLM 应用开发平台</td>
+<td>通用工作流自动化</td>
+</tr>
+<tr>
+<td><strong>AI/LLM 侧重</strong></td>
+<td>原生 AI 应用构建，RAG 引擎，AI Agent 编排</td>
+<td>LLM API 编排，AI 节点集成，LangChain 支持</td>
+</tr>
+<tr>
+<td><strong>目标用户</strong></td>
+<td>AI 开发者， 产品团队， 非技术 AI 构建者</td>
+<td>开发者， 技术团队， IT/DevOps 专业人员</td>
+</tr>
+<tr>
+<td><strong>核心优势</strong></td>
+<td>快速 AI 应用原型与部署，LLMOps 支持</td>
+<td>高度灵活性，强大的可扩展性，自托管带来的数据控制权与成本效益</td>
+</tr>
+<tr>
+<td><strong>工作流构建</strong></td>
+<td>视觉化 AI 应用编排 （Chatflow， Workflow）</td>
+<td>节点式通用流程搭建，支持代码增强逻辑</td>
+</tr>
+<tr>
+<td><strong>可扩展性</strong></td>
+<td>AI 插件 （模型， 工具， Agent 策略）， API 集成</td>
+<td>自定义节点开发， Code 节点 （JS/Python）， 广泛的 API 连接能力</td>
+</tr>
+<tr>
+<td><strong>部署选项</strong></td>
+<td>Dify Cloud 云服务， 自托管部署</td>
+<td>n8n Cloud 云服务， 自托管部署 （Fair-Code）</td>
+</tr>
+<tr>
+<td><strong>许可模式</strong></td>
+<td>修改版 Apache 2.0，不允许多租户，不允许修改 logo 等</td>
+<td>Fair-Code （Sustainable Use License），源代码可见，对商业转售有限制</td>
+</tr>
+<tr>
+<td><strong>集成数量</strong></td>
+<td>聚焦 AI 生态 （LLMs， 向量数据库， AI 工具）</td>
+<td>400+官方节点，近 2000 社区节点，覆盖各类应用与服务</td>
+</tr>
+</tbody>
+</table>
+<p>用大白话来说，就是如果你主要想<strong>创造 AI 应用本身而不是那种高度的定制化能力和代码级别的控制系统</strong>，<strong>Dify</strong> 是更合适的选择。如果你主要想<strong>连接和自动化现有的各种系统和流程，并可能在其中嵌入 AI 能力</strong>，那么 <strong>n8n</strong> 会更胜任。在某些情况下，两者也可以结合使用，例如使用 <strong>Dify</strong> 构建核心 AI 能力，然后通过 <strong>n8n</strong> 将其集成到更广泛的业务流程中。并没有什么谁好谁坏，只能说 <strong>侧重点</strong> 不同。</p>
+<p>随着 <strong>dify</strong> 的爆火，部署教程多得很，感觉也没有什么写部署教程的必要（随便一搜一大把）</p>
+<p>但是 <strong>n8n</strong> 这个平台，目前还没有 <strong>dify</strong> 知名度那么高，但好歹 <strong>N8n</strong> 也是和 <strong>dify</strong> 类似的低代码开发平台，而且他目前在 github 的 <strong>star</strong> 数已经超过了 <strong>dify</strong>，达到了恐怖的 107k<strong>star</strong>。</p>
+<p><img src="/cbsyy.github.io/media/feishu/Fz5ZbOmC7orF8wx7Y04cSk3Ln0d.webp" alt="文章配图"></p>
+<p><img src="/cbsyy.github.io/media/feishu/QR0Ob7JNeo1OA4x72nocIt1unSb.webp" alt="文章配图"></p>
+<p><strong>这么火爆的平台，必须上手玩玩才行，不然实在是有点心里痒痒。</strong></p>
+<p><strong>为了把更多的精力应用在工作流编排上，这里我们就选择最方便的傻瓜式部署方式。</strong></p>
+<p><strong>先下载 Docker Destop</strong></p>
+<p><strong>下载地址：<a href="https://www.docker.com/products/docker-desktop/">https://www.docker.com/products/docker-desktop/</a></strong></p>
+<p><strong>安装好后修改下存储路径，防止避免占用 C 盘空间造成电脑卡顿</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/DGObbfHQ0oZw8pxFWxmcB8LdnJO.webp" alt="文章配图"></p>
+<p><strong>然后在上方输入框中输入 n8n，选择 n8nio/n8n 点击 pull 拉取镜像</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/MVhfbtFSHo1zVGxQJlDc2kBAn5U.webp" alt="文章配图"></p>
+<p><strong>完成后根据 github 官网示例进行配置如下：</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/ElFkbFjqxoGcbFxFqejckApjnDh.webp" alt="文章配图"></p>
+<p><img src="/cbsyy.github.io/media/feishu/BwnYbIrdYo6EWNxNUZJcO07Hntd.webp" alt="文章配图"></p>
+<p><strong>点击 Run 启动镜像，在 logs 中会出现本地链接，点击即可访问</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/SBAmbUmS8oBBlfxRVh0ccpJynze.webp" alt="文章配图"></p>
+<p>这里注册一下信息，后续可通过发送到邮箱的 key 进行免费认证使用完整付费服务</p>
+<p><img src="/cbsyy.github.io/media/feishu/QfgkbPMQZoZWDhx1nUxc773wnSP.webp" alt="文章配图"></p>
+<p>兴高采烈的打开后，直接傻眼了，德国人开发的全英文的界面，简直就是对我不超过 20 分英语水平的嘲笑，这也太坑爹了。。。</p>
+<p><img src="/cbsyy.github.io/media/feishu/LXF5bnTlDoZOUIxih6DcDVkLnup.webp" alt="文章配图"></p>
+<p>于是赶紧搜寻了一下，有没有相关支持，在 github 中输入搜索关键词 <strong>n8n chinese</strong>，发现真的有！！！</p>
+<p><img src="/cbsyy.github.io/media/feishu/KCn7bWpWvojSq8xTw71cYHCznUh.webp" alt="文章配图"></p>
+<p>于是点开这个项目，按照要求下载并解压 n8n 的中文汉化包 editor-ui ，下载对应版本，我刚玩 当然是下最新版本<a href="https://github.com/other-blowsnow/n8n-i18n-chinese/releases/tag/n8n@1.97.1"> <strong>1.97.1</strong> </a><strong>了</strong></p>
+<p><strong>下好后解压到一个目录中，我解压的目录及内容如下：</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/SanNbcFoGouh8gxGp2Hcayc3ndw.webp" alt="文章配图"></p>
+<p>所以我的命令就是</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#E1E4E8">docker run </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">it </span><span style="color:#FDAEB7;font-style:italic">--</span><span style="color:#E1E4E8">rm </span><span style="color:#FDAEB7;font-style:italic">--</span><span style="color:#E1E4E8">name n8n </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">p </span><span style="color:#79B8FF">5678</span><span style="color:#E1E4E8">:</span><span style="color:#79B8FF">5678</span><span style="color:#F97583"> -</span><span style="color:#E1E4E8">v D:</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">editor</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">ui</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">dist:</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">usr</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">local</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">lib</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">node_modules</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">n8n</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">node_modules</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">n8n</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">editor</span><span style="color:#F97583">-</span><span style="color:#E1E4E8">ui</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">dist </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">v n8n_data:</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">home</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">node</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">.n8n </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">e </span><span style="color:#79B8FF">N8N_DEFAULT_LOCALE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">zh</span><span style="color:#F97583">-</span><span style="color:#79B8FF">CN</span><span style="color:#F97583"> -</span><span style="color:#E1E4E8">e </span><span style="color:#79B8FF">N8N_RUNNERS_ENABLED</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">true </span><span style="color:#F97583">-</span><span style="color:#E1E4E8">e </span><span style="color:#79B8FF">N8N_SECURE_COOKIE</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">false n8nio</span><span style="color:#F97583">/</span><span style="color:#E1E4E8">n8n</span></span></code></pre>
+<p>运行 即可看到 有一个基于本地的 <strong>5678</strong> 端口，点击打开</p>
+<p><img src="/cbsyy.github.io/media/feishu/Blv1bBHK6ofLmcxSmCiclJXWnQm.webp" alt="文章配图"></p>
+<p>可以看到，效果非常的 very good</p>
+<p><img src="/cbsyy.github.io/media/feishu/K8kPbmqVWoSuc9xcdK7cveunnxc.jpg" alt="文章配图"></p>
+<p>我只能说 开玩！！！</p>
+<p>涉及到的链接地址：</p>
+<p>汉化包下载地址：<a href="https://github.com/other-blowsnow/n8n-i18n-chinese/releases">https://github.com/other-blowsnow/n8n-i18n-chinese/releases</a></p>
+<p>n8n github 地址：<a href="https://github.com/n8n-io/n8n">https://github.com/n8n-io/n8n</a></p>
+<p>n8n 教程：<a href="https://docs.n8n.io/">https://docs.n8n.io/</a></p>
+<p>最后，欢迎学习交流讨论！！！</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-06-13<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/TUhudCHtXoGNf7xh3UdcFhLKnt9" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

@@ -1,0 +1,1 @@
+function e(e){return!e.startsWith(`/`)||e.startsWith(`//`)?e:`/cbsyy.github.io/`.replace(/\/$/,``)+e}export{e as t};

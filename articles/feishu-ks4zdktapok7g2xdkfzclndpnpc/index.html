@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="开头引入 你有没有想过，为什么淘宝总能精准推荐你想要的商品？为什么地图 App 能准确识别拥堵路段？背后的秘密就是聚类算法！ 今天我们用最简单的方式，揭秘两大经典聚类算法的奥秘。不需要复杂的数学公式，只要你上过学、加过微信群，就能秒…"><title>简单科普什么是机器学习无监督两兄弟 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-ks4zdktapok7g2xdkfzclndpnpc/"><meta property="og:title" content="简单科普什么是机器学习无监督两兄弟 · BINGLU"><meta property="og:description" content="开头引入 你有没有想过，为什么淘宝总能精准推荐你想要的商品？为什么地图 App 能准确识别拥堵路段？背后的秘密就是聚类算法！ 今天我们用最简单的方式，揭秘两大经典聚类算法的奥秘。不需要复杂的数学公式，只要你上过学、加过微信群，就能秒…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">机器学习</div><h1>简单科普什么是机器学习无监督两兄弟</h1><p class="quiet">胡守谦 · 2025-08-14 · 6 分钟</p><details class="article-toc"><summary>本文目录 · 8 节</summary><nav aria-label="本文目录"><a href="#开头引入" style="padding-left:0px">开头引入</a><a href="#什么是聚类" style="padding-left:0px">什么是聚类？</a><a href="#为什么要学聚类" style="padding-left:0px">为什么要学聚类？</a><a href="#接下来我们讲讲聚类中比较典的两兄弟k-means-和-dbscan" style="padding-left:28px">接下来我们讲讲聚类中比较典的两兄弟：k-means 和 dbscan。</a><a href="#k-means" style="padding-left:0px">K-means</a><a href="#dbscan" style="padding-left:0px">DBSCAN</a><a href="#简单举个例子的话就是" style="padding-left:0px">简单举个例子的话就是</a><a href="#算法对比" style="padding-left:0px">算法对比</a></nav></details><div class="prose"><h2 id="开头引入">开头引入</h2>
+<p><strong>你有没有想过，为什么淘宝总能精准推荐你想要的商品？为什么地图 App 能准确识别拥堵路段？背后的秘密就是聚类算法！</strong></p>
+<p>今天我们用最简单的方式，揭秘两大经典聚类算法的奥秘。不需要复杂的数学公式，只要你上过学、加过微信群，就能秒懂！</p>
+<h2 id="什么是聚类">什么是聚类？</h2>
+<p>简单来说，聚类就是“物以类聚，人以群分”的数字化实现。想象一下整理衣柜：你会把 T 恤放一堆，裤子放一堆，这就是聚类的思想。计算机也是这样，通过分析数据的相似性，自动把相似的数据归为一类。</p>
+<h2 id="为什么要学聚类">为什么要学聚类？</h2>
+<ul>
+<li><strong>电商推荐</strong>：把相似购买行为的用户归类，实现精准营销</li>
+<li><strong>社交分析</strong>：发现朋友圈里的小团体，推荐可能认识的人</li>
+<li><strong>城市规划</strong>：分析人流热点，优化商圈布局</li>
+<li><strong>医疗诊断</strong>：根据症状相似性辅助疾病分类</li>
+</ul>
+<h4 id="接下来我们讲讲聚类中比较典的两兄弟k-means-和-dbscan">接下来我们讲讲聚类中比较典的两兄弟：<strong>k-means</strong> 和 <strong>dbscan</strong>。</h4>
+<h2 id="k-means">K-means</h2>
+<p><strong>K-means 聚类</strong>的目标是将数据分成 k 个簇。算法开始时随机初始化 k 个质心点，比如我们要分 2 类就放置红色和蓝色两个质心。接下来计算每个数据点到各个质心的距离，距离越小说明越相似，通过遍历所有数据点进行分配：离红色质心近的归为红类，离蓝色质心近的归为蓝类。</p>
+<p>当发现分类效果不理想时，算法会重新调整质心位置。具体做法是：将所有红色点的坐标取平均值计算出新的红色质心，同样计算蓝色质心的新位置。然后用新的质心重新遍历所有数据点，原来属于红色的点可能因为离蓝色质心更近而被重新分配到蓝色簇中。这个过程会持续迭代优化，直到所有样本点的归属不再发生变化，算法收敛完成，就结束了。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li><strong>简单快速</strong>：算法思路直观，实现简便，适合常规数据集处理</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li><strong>k 值选择困难</strong>：参数 k 需要人工设定，通常要尝试多组数值来观察效果</li>
+<li><strong>计算复杂度高</strong>：时间复杂度与样本数量呈线性关系，每次迭代都要计算所有样本到质心的距离，面对几千万样本时计算负担沉重</li>
+<li><strong>形状适应性差</strong>：很难发现任意形状的簇，无法有效处理环形、月牙形等不规则形状的数据分布</li>
+<li><strong>初值敏感性</strong>：由于质心初始化是随机的，每次运行结果可能差异很大，初始值对最终结果影响显著</li>
+</ul>
+<p><strong>每一次差异都比较大，初值会对结果产生很大影响</strong></p>
+<h2 id="dbscan"><strong>DBSCAN</strong></h2>
+<p><strong>DBSCAN</strong> 是一种基于<strong>密度</strong>的<strong>聚类</strong>方法，它不需要预先指定簇的数量，而是通过分析数据点的密度分布来自动发现簇。算法的核心思想很简单：密集的地方自然形成一个群体，稀疏的地方就是边界或噪声。</p>
+<p>具体来说，DBSCAN 需要你设定两个参数：邻域半径（<strong>eps</strong>）和核心点周围的最少点数（<strong>min_samples</strong>）。算法首先扫描所有数据点，找出那些在指定半径内包含足够多邻居的“核心点”。然后从任意一个核心点开始，像滚雪球一样把所有能够密度连通的核心点都拉进同一个簇里。这就像朋友圈的扩散：张三认识李四，李四认识王五，他们自然就形成了一个紧密的小团体。</p>
+<p>对于那些不够“受欢迎”的非核心点，它们的命运比较被动：如果恰好在某个核心点的势力范围内，就会被拉入相应的簇中，但它们没有资格去拉拢其他人，只能当个“跟班”。用同样的策略，算法会陆续发现其他的簇。最终，那些既不是核心点、又无法投靠任何团体的孤独分子，就被标记为噪声点或离群点，它们注定要独自美丽。</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li><strong>不用猜簇的个数</strong>：K-means 需要你提前说要分几类，DBSCAN 会自己根据数据的聚集程度来决定分几个群体，完全不用你操心</li>
+<li><strong>什么形状都能处理</strong>：不管数据长得多奇怪，是弯弯曲曲的还是环形的，只要够密集就能找出来，K-means 只能处理圆圆的数据团</li>
+<li><strong>会自动踢出捣乱分子</strong>：那些明显不合群的异常数据点，DBSCAN 会直接标记为噪声扔掉，不会硬塞到某个组里影响整体效果</li>
+<li><strong>结果很稳定</strong>：每次跑出来的结果都一样，不像 K-means 每次随机初始化导致结果不同</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li><strong>参数不好调</strong>：那两个参数 eps 和 min_samples 怎么设置完全靠经验和感觉，新手很容易调得乱七八糟</li>
+<li><strong>处理不了密度差异大的数据</strong>：如果有些地方人很多，有些地方人很少，用一套标准很难同时处理好，要么漏掉稀疏的群体，要么把噪声当成群体</li>
+<li><strong>高维数据就歇菜了</strong>：数据特征太多的时候，距离的概念就模糊了，算法基本失效</li>
+<li><strong>计算量比较大</strong>：需要算每个点和其他点的距离，数据量大的时候会比 K-means 慢不少</li>
+</ul>
+<p>总的来说，DBSCAN 就像个<strong>挑剔</strong>的社交达人，对于复杂的人际关系很有一套，但对环境要求比较高，遇到不合适的场景就不太行了。</p>
+<h2 id="简单举个例子的话就是">简单举个例子的话就是</h2>
+<p><strong>K-means</strong> 就像学校分班：</p>
+<ul>
+<li>校长预先决定分几个班（k 值）</li>
+<li>随机指定几个临时班长位置</li>
+<li>学生选择离自己最近的班长</li>
+<li>每个班重新选出“中心学生”当新班长</li>
+<li>重复直到班级稳定</li>
+</ul>
+<p><strong>DBSCAN</strong> 就像自然形成的朋友圈：</p>
+<ul>
+<li>人缘好的（核心点）自然成为圈子中心</li>
+<li>朋友的朋友也是朋友（密度连接）</li>
+<li>性格孤僻的就是独行侠（异常点）</li>
+<li>不需要预先决定要几个圈子</li>
+</ul>
+<p><strong>选择 K-means 当：</strong></p>
+<ul>
+<li>你大致知道要分几类</li>
+<li>数据分布相对规整（球形）</li>
+<li>追求计算速度和简单性</li>
+<li>异常值较少</li>
+</ul>
+<p><strong>选择 DBSCAN 当：</strong></p>
+<ul>
+<li>不知道要分几类</li>
+<li>数据可能有复杂形状</li>
+<li>存在大量噪声和异常值</li>
+<li>想要自动发现数据的自然结构</li>
+</ul>
+<h2 id="算法对比">算法对比</h2>
+<p><img src="/cbsyy.github.io/media/feishu/MJqfb3iWlo9sSwxZhtWcBjCYn4g.webp" alt="文章配图"></p>
+<p>总而言之这两种算法各有所长，K-means 适合“规整”的数据，DBSCAN 适合“复杂”的现实场景。选择哪个主要看你的数据长什么样子和想解决什么问题！</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-08-14<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/KS4ZdKTaPoK7G2xdKfZcLnDPnpC" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

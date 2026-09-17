@@ -1,0 +1,52 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="量化与精度优化 模型结构优化决定“做什么计算”，而计算效率高度依赖数值精度——优化框架的第二维。 数值精度决定权重与激活的表示方式，直接影响内存使用、计算效率和功耗。许多最先进的模型使用高精度浮点格式如 FP32（32 位浮点），虽…"><title>量化——下 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-dpy7dhietofdgoxswufcvppwn8c/"><meta property="og:title" content="量化——下 · BINGLU"><meta property="og:description" content="量化与精度优化 模型结构优化决定“做什么计算”，而计算效率高度依赖数值精度——优化框架的第二维。 数值精度决定权重与激活的表示方式，直接影响内存使用、计算效率和功耗。许多最先进的模型使用高精度浮点格式如 FP32（32 位浮点），虽…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">大模型与深度学习</div><h1>量化——下</h1><p class="quiet">胡守谦 · 2026-02-26 · 12 分钟</p><details class="article-toc"><summary>本文目录 · 8 节</summary><nav aria-label="本文目录"><a href="#量化与精度优化" style="padding-left:0px">量化与精度优化</a><a href="#数值编码与存储" style="padding-left:14px">数值编码与存储</a><a href="#精度降低策略" style="padding-left:14px">精度降低策略</a><a href="#后训练量化ptq" style="padding-left:28px">后训练量化（PTQ）</a><a href="#ptq-工作原理" style="padding-left:42px">PTQ 工作原理</a><a href="#ptq-挑战与局限" style="padding-left:42px">PTQ 挑战与局限</a><a href="#极端量化" style="padding-left:14px">极端量化</a><a href="#挑战与局限" style="padding-left:28px">挑战与局限</a></nav></details><div class="prose"><h2 id="量化与精度优化">量化与精度优化</h2>
+<p>模型结构优化决定“做什么计算”，而计算效率高度依赖数值精度——优化框架的第二维。</p>
+<p>数值精度决定权重与激活的表示方式，直接影响内存使用、计算效率和功耗。许多最先进的模型使用高精度浮点格式如 FP32（32 位浮点），虽然提供了数值稳定性和高精度，但也增加了存储需求、内存带宽使用和功耗。现代 AI 加速器包括专用硬件支持低精度计算，使得 FP16 和 INT8 操作的吞吐量远高于 FP32。降低精度会引入量化误差，可能降低精度，具体影响取决于模型架构、数据集特性和硬件支持。</p>
+<p>精度优化技术主要分为三类：</p>
+<ul>
+<li><strong>后训练量化</strong>：在模型训练完成后，快速将模型权重和激活值转换为低精度表示，便于快速部署。</li>
+<li><strong>量化感知训练</strong>：在训练过程中模拟低精度推理，调整模型权重以适应量化带来的误差，适用于对精度要求较高的生产环境。</li>
+<li><strong>极端量化</strong>：如二值化（Binarization）和三值化（Ternarization），将权重和激活值压缩为极少数离散值，适合资源极其受限的环境。</li>
+</ul>
+<p>不同精度格式的权衡、硬件与软件协同设计的考量，以及在最大化效率增益的同时，最小化精度下降的方法。</p>
+<p><strong>量化影响</strong>：从 FP32 转为 INT8 可将推理时间缩短至原来的 1/4，同时模型体积也缩小 4 倍，大幅提升模型在资源受限环境下的部署效率。</p>
+<p>但降低数值精度也带来权衡。低精度格式可能引入数值不稳定和量化噪声，影响模型精度。有些架构（如大型 Transformer NLP 模型）对量化较为稳健，而部分模型则可能精度下降明显。因此，选择合适的数值精度需在精度约束、硬件支持和效率提升之间权衡。</p>
+<h3 id="数值编码与存储">数值编码与存储</h3>
+<p>机器学习系统中的数值数据表示不仅仅是精度问题，还涉及编码格式和存储机制，这些都对计算效率有重要影响。数值编码决定了浮点和整数在内存中的存储方式及硬件处理方式，直接影响 ML 工作负载的性能。随着模型规模和复杂度提升，优化数值编码对于高效利用专用硬件变得愈发重要。</p>
+<p>浮点数表示广泛采用 <a href="https://standards.ieee.org/standard/754-2019.html">IEEE 754 标准</a>，通过符号位、指数位和尾数位组合编码。常见的 FP32（单精度）、FP64（双精度）精度高但资源消耗大。为提升效率，业界引入了低精度格式如 FP16、<a href="https://cloud.google.com/tpu/docs/bfloat16">bfloat16</a>、<a href="https://arxiv.org/abs/2209.05433">FP8</a> 等，既降低存储需求，又能满足 ML 计算的动态范围。bfloat16 与 FP16 不同，保留了与 FP32 相同的 8 位指数，牺牲部分尾数精度，因而在训练中能更好地保持数值稳定性，适合大规模梯度更新。</p>
+<p>整数表示（如 INT8、INT4）进一步简化存储和计算，省去了指数和尾数编码，常用于推理阶段的量化模型。权重和激活被离散化为整数，便于硬件加速和降低功耗，尤其适合边缘和移动设备。极端情况下，二值化和三值化仅用 1-2 位表示，极大压缩模型体积和能耗，但需配合专用训练或结构调整以减缓精度损失。</p>
+<p>新兴数值格式力图在效率与精度间取得更好平衡。例如 <a href="https://blogs.nvidia.com/blog/2020/05/14/tensorfloat-32-precision-format/">TF32</a>（NVIDIA Ampere GPU 专用）缩减了 FP32 的尾数位，保留指数宽度，实现更快计算且精度损失极小。FP8 作为 AI 加速器的新宠，进一步降低精度但结构上更适合 ML 负载。其他如 <a href="https://ieeexplore.ieee.org/document/9399648">Posit</a>、<a href="https://arxiv.org/abs/1711.02213">Flexpoint</a>、<a href="https://developer.arm.com/documentation/ddi0596/2020-12/SIMD-FP-Instructions/BFMLALB--BFMLALT--vector---BFloat16-floating-point-widening-multiply-add-long--vector--">BF16ALT</a> 等格式也在探索数值稳定性和硬件适配性。</p>
+<p>数值编码效率还受数据在内存中的存储与访问方式影响。AI 加速器通过优化内存层级、专用硬件（如张量核、矩阵乘法单元、向量处理引擎）提升低精度计算性能。数据对齐、内存分块、压缩等技术确保低精度计算带来实际性能提升。</p>
+<p>随着 ML 系统演进，数值编码与存储策略将持续适应大模型和多样化硬件需求。新一代 AI 精度格式的不断发展，凸显了数值表示与硬件协同设计的重要性，确保模型在降低计算成本的同时实现最优性能。</p>
+<p>INT8 精度在推理场景下提升更为显著。许多量化模型采用 INT8 推理，存储降 4 倍，计算加速 4–8 倍，广泛应用于移动和嵌入式 AI。</p>
+<p>二值/三值网络是量化的极致，权重和激活仅取 1 位或 2 位，极大节省存储和能耗，但若无专用结构，精度损失较大。</p>
+<h3 id="精度降低策略">精度降低策略</h3>
+<p>降低数值精度是提升模型效率的重要手段。通过减少权重和激活的位宽，模型可降低内存占用、提升吞吐量、降低功耗。但简单量化易引入误差，导致精度下降。为此，业界发展出多种精度优化策略，实现效率与精度的平衡。</p>
+<p>量化可在模型生命周期的不同阶段应用。后训练量化（PTQ）在训练后降低精度，适合快速推理优化。量化感知训练（QAT）在训练中模拟量化，提升低精度下的精度。混合精度训练则结合硬件支持，动态分配不同运算精度，实现高效推理。</p>
+<h4 id="后训练量化ptq">后训练量化（PTQ）</h4>
+<p>量化是突破内存瓶颈、降低带宽的核心算法。主流 ML 框架（TensorFlow Lite、ONNX Runtime、PyTorch）均内置标准化 PTQ API，便于高效落地。</p>
+<p>PTQ 在训练后将权重和激活从高精度（FP32）转换为低精度（INT8/FP16），无需重新训练。这样可显著减小模型体积、加速推理、降低能耗，适合移动、边缘和云推理等资源受限场景。</p>
+<p>PTQ 最大优势是计算成本低——无需重训练或访问训练数据。但降低精度会引入量化误差，尤其对高精度需求任务影响较大。</p>
+<h5 id="ptq-工作原理">PTQ 工作原理</h5>
+<p>PTQ 将训练好的模型权重和激活从高精度浮点（如 FP32）转换为低精度（如 INT8/FP16），减少模型内存占用、加速推理、降低功耗。但低精度格式数值范围更小，量化会引入舍入误差，影响精度。</p>
+<p>核心机制是缩放并映射高精度值到低精度区间。常用的均匀量化（uniform quantization）用统一缩放因子将浮点值映射为整数。</p>
+<p>如 INT8 量化中，模型浮点值（如 $[-r, r]$）被映射到整数区间 $[-128, 127]$。缩放因子确保信息尽量保留。量化后推理用整数运算，效率远高于浮点，但因舍入和近似，精度略有下降。</p>
+<p>除均匀量化外，非均匀量化可为高密度区间分配更高精度，适合权重分布集中场景，但实现更复杂，常用于对精度极为敏感的模型。</p>
+<p>PTQ 对 CV 模型（如 CNN）效果尤佳，NLP Transformer、语音识别等对数值微小变化敏感的模型则需更精细的量化策略。</p>
+<h5 id="ptq-挑战与局限">PTQ 挑战与局限</h5>
+<p>尽管 PTQ 具有诸多优点，但由于浮点值到离散低精度表示的映射过程中的舍入效应，它引入了量化误差。虽然有些模型对这些变化具有稳健性，但其他模型可能会经历显著的精度下降，特别是在依赖于数值精度较高的任务中。</p>
+<p>这种精度损失的程度取决于模型架构和任务领域。用于图像分类的 CNN 对 PTQ 通常具有较好的容忍度，即使在激进的 INT8 量化下也能保持接近原始的精度。而在 NLP 和语音识别中使用的基于 Transformer 的模型则往往更为敏感，因为这些架构依赖于注意力机制中数值关系的精确性。</p>
+<p>为了减轻精度损失，通常采用 KL 散度缩放或按通道量化等校准技术来微调缩放因子，尽量减少信息损失。一些框架（包括 TensorFlow Lite 和 PyTorch）提供了带有内置校准方法的自动量化工具，以提高精度保留。</p>
+<p>另一个 PTQ 的局限是并非所有硬件都支持高效的整数运算。虽然 GPU、TPU 和专用的边缘 AI 芯片通常包括对 INT8 推理的专门支持，但通用 CPU 可能缺乏低精度执行的优化指令，从而导致量化性能提升有限。</p>
+<p>PTQ 通常不适用于训练过程。由于 PTQ 是在训练后应用量化的，因此需要进一步微调或适应的模型可能更适合采用其他方法，如量化感知训练（QAT），以确保在学习过程中充分考虑精度约束。</p>
+<p>后训练量化仍然是提高推理效率的最实用和广泛使用的技术之一。它通过显著降低计算和存储需求，提供了在资源受限环境中部署机器学习模型的可行方案。然而，PTQ 的成功依赖于模型架构、任务敏感性和硬件兼容性。在精度下降不可接受的场合，可能需要采用量化感知训练等替代策略。</p>
+<p>后训练量化为更高级的量化方法奠定了基础。量化感知训练（QAT）通过在训练过程中直接整合量化约束，模拟低精度算术运算，使模型适应量化效应，尤其适用于对数值精度要求较高的模型，如用于 NLP 和语音识别的变换器。图 23 说明了 QAT 过程：对预训练模型应用量化，然后进行微调以适应低精度约束。</p>
+<p>在许多情况下，QAT 还可以基于 PTQ 进行。首先应用 PTQ 生成初始量化模型，然后以该量化模型为基础进行 QAT 微调，帮助模型更好地适应低精度约束。这种结合 PTQ 和 QAT 的混合方法，兼顾了效率和精度，减少了单独采用后训练量化时通常会出现的精度下降。</p>
+<p><strong>量化权衡</strong>：量化感知训练（QAT）通过在训练过程中整合量化，最小化因数值精度降低带来的精度损失；而后训练量化（PTQ）则提供更快的部署速度，但可能需要校准以减轻精度下降。与仅仅量化随机初始化网络相比，QAT 的重新训练要求增加了训练的复杂性。</p>
+<p>将量化整合到训练过程中的主要好处是，它比后训练量化更有效地保持模型精度，尤其是在低精度推理条件下。通过在训练中考虑量化效应，模型能够适应低精度算术运算，从而减少量化误差。尽管 QAT 在低精度下实现更高的精度，但它需要额外的训练时间和计算资源。在实践中，通常采用从 PTQ 开始的混合方法，对于对精度要求较高的模型再应用 QAT，以在效率和性能之间取得最佳平衡。</p>
+<h3 id="极端量化">极端量化</h3>
+<p>超越 INT8 和 INT4 的极端量化技术使用 1 位（二值化）或 2 位（三值化）表示法，实现内存使用和计算需求的剧减。二值化将权重和激活限制为两个值（通常是 -1 和 +1，或 0 和 1），大幅减少模型大小，并在专用硬件（如二值神经网络）上加速推理。然而，这种限制严重限制了模型的表达能力，往往会降低在图像识别或自然语言处理等任务上的精度。</p>
+<p>三值化通过允许三个值（-1、0、+1）扩展了二值化，提供了额外的灵活性，略微提高了精度。零值的引入使得稀疏性更强，同时保持了更多的表达能力。这两种技术都需要像直通估计器（STE）这样的梯度近似方法来处理训练过程中不可微的量化操作，QAT 的结合有助于减轻精度损失。</p>
+<h4 id="挑战与局限">挑战与局限</h4>
+<p>尽管能够为嵌入式系统和移动设备实现超低功耗的机器学习，二值化和三值化仍面临着重大挑战。保持性能在如此极端的量化下变得困难，需要专用硬件高效处理二进制或三元操作。传统处理器缺乏对这些计算的优化，迫使开发定制硬件加速器。</p>
+<p>精度损失仍然是一个关键问题。这些方法适用于对精度要求不高的任务，或者可以通过 QAT 弥补精度限制的场景。尽管面临挑战，但在保持可接受精度的同时大幅减少模型大小的能力，使它们在边缘 AI 和资源受限环境中具有吸引力。未来专用硬件和训练技术的进步，可能会增强它们在高效、可扩展 AI 中的作用。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2026-02-26<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/DPy7dHIETofDgOxSWUfcvPPWn8c" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

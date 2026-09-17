@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Agent Skills是个啥？ 熟悉Linux(所有类unix系统)的开发者都知道，在linux中，一切都是文件，无论是磁盘上的文本、设备、网络接口、进程通信、甚至内核状态信息。因此所有的动作都可以通过相同的操作系统调用（open…"><title>Agent Skills是个啥？ · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-t7yudm4r4oi6rixrkqkcx386ndg/"><meta property="og:title" content="Agent Skills是个啥？ · BINGLU"><meta property="og:description" content="Agent Skills是个啥？ 熟悉Linux(所有类unix系统)的开发者都知道，在linux中，一切都是文件，无论是磁盘上的文本、设备、网络接口、进程通信、甚至内核状态信息。因此所有的动作都可以通过相同的操作系统调用（open…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">Agent 与 RAG</div><h1>Agent Skills是个啥？</h1><p class="quiet">胡守谦 · 2025-10-20 · 3 分钟</p><details class="article-toc"><summary>本文目录 · 7 节</summary><nav aria-label="本文目录"><a href="#agent-skills介绍" style="padding-left:0px">Agent Skills介绍</a><a href="#skill的组成" style="padding-left:0px">Skill的组成</a><a href="#skillmd" style="padding-left:0px">SKILL.md</a><a href="#其他捆绑文件" style="padding-left:0px">其他捆绑文件</a><a href="#agent-skills的调用逻辑" style="padding-left:0px">Agent Skills的调用逻辑</a><a href="#skills与mcp的关系" style="padding-left:0px">skills与mcp的关系</a><a href="#最后" style="padding-left:0px">最后</a></nav></details><div class="prose"><title>Agent Skills是个啥？</title>
+<p><img src="/cbsyy.github.io/media/feishu/YJbYbDUisotOSfxhYOicBw1yn0d.webp" alt="文章配图"></p>
+<p>熟悉Linux(所有类unix系统)的开发者都知道，在linux中，一切都是<strong>文件</strong>，无论是磁盘上的文本、设备、网络接口、进程通信、甚至内核状态信息。因此所有的动作都可以通过相同的操作系统调用（open、read、write、close）。</p>
+<p>这里面的设计哲学是：</p>
+<blockquote>
+<p>“通过统一的文件接口抽象所有资源，简化系统复杂性。”</p>
+</blockquote>
+<blockquote>
+<p>Agent Skills 或许将成为Agent OS，一个真正的智能操作系统。</p>
+</blockquote>
+<h1 id="agent-skills介绍">Agent Skills介绍</h1>
+<p>官方文章在这里</p>
+<p><a href="https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills">https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills</a></p>
+<p>下面有请豆包同学简单总结</p>
+<p><img src="/cbsyy.github.io/media/feishu/Vziub3TkEoA503xwr6ccHYJ6nVd.webp" alt="文章配图"></p>
+<p>在我看来，Agent Skills是一种设计思想，提前将指令、知识、脚本等资源打包成文件夹，由Agent按需加载，再使用有限的MCP，完成复杂任务。</p>
+<p><strong>Agent Skills是上下文工程的一部分。</strong></p>
+<p>同时由于文件夹的分层特性，天然提供了渐进式的信息披露方式。Agent只在需要时加载信息，节省上下文窗口，启动时只读YAML开头，需要时整篇 SKILL 入上下文，再深入才读同目录下的附加文件/脚本等。</p>
+<p><img src="/cbsyy.github.io/media/feishu/A8ndbrLJWoaOUGx6m5ZcX8punae.webp" alt="文章配图"></p>
+<h1 id="skill的组成">Skill的组成</h1>
+<p>SKILL.md文件及其依赖的其他文件组成的文件夹。</p>
+<h2 id="skillmd">SKILL.md</h2>
+<p>这个文件要求必须包含一些必要元数据， YAML 文件头： <strong><code>name</code></strong>（名称）、<strong><code>description</code></strong>（描述）以及 <strong>正文</strong>，Agent启动时会把拥有的skill的文件头预加载到系统提示词中,类似工具调用的工具名称和工具描述，当模型觉得这其中某些能力跟当前用户提出的需求有关系，就查看这些能力的全部内容(即Markdown正文部分)，然后加载到上下文中，这是最简单任务的流程。</p>
+<p><img src="/cbsyy.github.io/media/feishu/RH1ub7vyHoSdpbx1U6EcW3kLnNd.webp" alt="文章配图"></p>
+<h2 id="其他捆绑文件">其他捆绑文件</h2>
+<p>在技能中捆绑额外的文件，将更多上下文（通过附加文件）整合到技能中，然后Agent根据任务触发，灵活调用它们，确保按需加载，最大化利用。这种开发方式就像word文档中一级二级三级标题一样，是逐层递进的形式。</p>
+<p>比如示例SKILL.md中所使用到的其他md文件。</p>
+<p><img src="/cbsyy.github.io/media/feishu/Xo5sbpiccoqm9fxmHqdcNN3JnXe.webp" alt="文章配图"></p>
+<p>由于我们不需要把当前任务所需要用到的所有上下文的信息全部加载到LLM窗口，而是基于每个步骤调用每个步骤对应的上下文，所以理论上来说，一个技能中可以打包的上下文量可以无上限。</p>
+<p><img src="/cbsyy.github.io/media/feishu/LtNEbWqVkoH8k9xDz1McElH8n3e.webp" alt="文章配图"></p>
+<h1 id="agent-skills的调用逻辑">Agent Skills的调用逻辑</h1>
+<p><img src="/cbsyy.github.io/media/feishu/Fhx6bkgLJovcb8xnUJPcQ0mUnTd.webp" alt="文章配图"></p>
+<h1 id="skills与mcp的关系">skills与mcp的关系</h1>
+<p>skill解决怎么做的问题，mcp解决做的问题。</p>
+<h1 id="最后">最后</h1>
+<p>现如今大模型Agent已经在朝着操作系统的方向发展，期待一个全新的世界。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-10-20<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/T7yudm4R4oi6rixrKQKcX386ndg" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

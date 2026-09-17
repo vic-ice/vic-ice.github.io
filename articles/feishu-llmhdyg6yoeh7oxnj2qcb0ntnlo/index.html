@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="在最基础的神经网络中，常见的连接方式是全连接层，即上一层的每一个神经元都与下一层的每一个神经元相连。然而这种方式在处理图像时存在明显局限。首先，它需要将图像展平成一维向量，导致参数量极其庞大，计算开销巨大；其次，它无法保留图像的空间…"><title>CNN 卷积神经网络 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-llmhdyg6yoeh7oxnj2qcb0ntnlo/"><meta property="og:title" content="CNN 卷积神经网络 · BINGLU"><meta property="og:description" content="在最基础的神经网络中，常见的连接方式是全连接层，即上一层的每一个神经元都与下一层的每一个神经元相连。然而这种方式在处理图像时存在明显局限。首先，它需要将图像展平成一维向量，导致参数量极其庞大，计算开销巨大；其次，它无法保留图像的空间…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">大模型与深度学习</div><h1>CNN 卷积神经网络</h1><p class="quiet">胡守谦 · 2025-08-19 · 3 分钟</p><details class="article-toc"><summary>本文目录 · 8 节</summary><nav aria-label="本文目录"><a href="#基础神经网络模型" style="padding-left:0px">基础神经网络模型</a><a href="#卷积神经网络层级结构" style="padding-left:0px">卷积神经网络层级结构</a><a href="#为什么需要卷积层" style="padding-left:0px">为什么需要卷积层？</a><a href="#全连接层的局限性" style="padding-left:14px">全连接层的局限性</a><a href="#卷积层的优势" style="padding-left:14px">卷积层的优势</a><a href="#池化层的作用" style="padding-left:0px">池化层的作用</a><a href="#示例代码" style="padding-left:0px">示例代码：</a><a href="#总结" style="padding-left:0px">总结</a></nav></details><div class="prose"><blockquote>
+<p>在最基础的神经网络中，常见的连接方式是全连接层，即上一层的每一个神经元都与下一层的每一个神经元相连。然而这种方式在处理图像时存在明显局限。首先，它需要将图像展平成一维向量，导致参数量极其庞大，计算开销巨大；其次，它无法保留图像的空间结构，一个像素点位置或亮度的轻微变化，往往会被视作完全不同的输入。为了解决这些问题，卷积层被提出。卷积层通过“局部感受野“和”参数共享”的方式，大幅降低了计算复杂度，同时更好地捕捉图像中的局部特征与空间关系，从而在图像领域展现出更强的表现力。</p>
+</blockquote>
+<h2 id="基础神经网络模型">基础神经网络模型</h2>
+<p>经典的神经网络数学表达式为：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>y = g(wx + b)</span></span></code></pre>
+<p>其中：</p>
+<ul>
+<li>w：权重</li>
+<li>x：输入</li>
+<li>b：偏置</li>
+<li>g：激活函数</li>
+</ul>
+<h2 id="卷积神经网络层级结构">卷积神经网络层级结构</h2>
+<p>典型的 CNN 架构包含以下几个核心层：</p>
+<p><img src="/cbsyy.github.io/media/feishu/YarNbLBmmoHsnOxWlCQcoxAunGd.webp" alt="文章配图"></p>
+<p><strong>输入层 → 卷积层 → 池化层 → 全连接层 → 输出层</strong></p>
+<hr>
+<h2 id="为什么需要卷积层">为什么需要卷积层？</h2>
+<p><img src="/cbsyy.github.io/media/feishu/L5mWbMZW0otiLFxkfIFc9K4kncy.webp" alt="文章配图"></p>
+<h3 id="全连接层的局限性">全连接层的局限性</h3>
+<p>在传统的全连接神经网络中：</p>
+<ul>
+<li>
+<p>每个神经元都与上一层的所有神经元相连</p>
+</li>
+<li>
+<p>这种连接方式在处理图像时存在明显问题：</p>
+<ul>
+<li><strong>参数量庞大</strong>：一张简单的图像就需要大量的连接参数</li>
+<li><strong>计算开销巨大</strong>：即使像素点发生微小变化（轻微变暗或移位），也需要重新计算所有连接</li>
+<li><strong>无法有效捕获空间关系</strong>：忽略了图像中像素的空间相关性</li>
+</ul>
+</li>
+</ul>
+<h3 id="卷积层的优势">卷积层的优势</h3>
+<p>卷积层通过以下方式解决了上述问题：</p>
+<ol>
+<li>
+<p><strong>局部连接</strong></p>
+<ul>
+<li>使用卷积核（通常为 3×3 大小）与图像局部区域进行矩阵运算</li>
+<li>卷积核在整个图像上滑动，进行卷积运算</li>
+</ul>
+</li>
+<li>
+<p><strong>参数共享</strong></p>
+<ul>
+<li>同一个卷积核在不同位置共享参数</li>
+<li>大大减少了需要训练的参数数量</li>
+</ul>
+</li>
+<li>
+<p><strong>特征提取能力强</strong></p>
+<ul>
+<li>更容易捕获图像的局部特征（如边缘、纹理等）</li>
+<li>对图像的小幅平移、旋转具有一定的鲁棒性</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="池化层的作用">池化层的作用</h2>
+<p>池化层位于卷积层之后，主要功能包括：</p>
+<ul>
+<li><strong>降维处理</strong>：减少特征图的空间尺寸</li>
+<li><strong>减少计算量</strong>：降低后续层的计算负担</li>
+<li><strong>保留重要特征</strong>：在降维的同时保持关键信息</li>
+<li><strong>增强鲁棒性</strong>：对输入的小幅变化更加稳定</li>
+</ul>
+<hr>
+<h2 id="示例代码">示例代码：</h2>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># mnist7_torch.py</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> torch</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> torch.nn </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> nn</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> torch.nn.functional </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> F</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> torchvision </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> datasets, transforms</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#E1E4E8"> torch.utils.data </span><span style="color:#F97583">import</span><span style="color:#E1E4E8"> DataLoader</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> matplotlib.pyplot </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> plt</span></span>
+<span class="line"><span style="color:#F97583">from</span><span style="color:#79B8FF"> PIL</span><span style="color:#F97583"> import</span><span style="color:#E1E4E8"> Image</span></span>
+<span class="line"><span style="color:#F97583">import</span><span style="color:#E1E4E8"> numpy </span><span style="color:#F97583">as</span><span style="color:#E1E4E8"> np</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 1. 超参数</span></span>
+<span class="line"><span style="color:#79B8FF">BATCH_SIZE</span><span style="color:#F97583"> =</span><span style="color:#79B8FF"> 64</span></span>
+<span class="line"><span style="color:#79B8FF">EPOCHS</span><span style="color:#F97583">     =</span><span style="color:#79B8FF"> 10</span></span>
+<span class="line"><span style="color:#79B8FF">DEVICE</span><span style="color:#F97583">     =</span><span style="color:#9ECBFF"> 'cuda'</span><span style="color:#F97583"> if</span><span style="color:#E1E4E8"> torch.cuda.is_available() </span><span style="color:#F97583">else</span><span style="color:#9ECBFF"> 'cpu'</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 2. 数据加载</span></span>
+<span class="line"><span style="color:#E1E4E8">transform </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transforms.Compose([</span></span>
+<span class="line"><span style="color:#E1E4E8">    transforms.ToTensor(),            </span><span style="color:#6A737D"># [0,1]</span></span>
+<span class="line"><span style="color:#E1E4E8">])</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">train_ds </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> datasets.MNIST(</span><span style="color:#FFAB70">root</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'.'</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">train</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">,  </span><span style="color:#FFAB70">download</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">transform</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">transform)</span></span>
+<span class="line"><span style="color:#E1E4E8">test_ds  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> datasets.MNIST(</span><span style="color:#FFAB70">root</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'.'</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">train</span><span style="color:#F97583">=</span><span style="color:#79B8FF">False</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">download</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">transform</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">transform)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">train_loader </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> DataLoader(train_ds, </span><span style="color:#FFAB70">batch_size</span><span style="color:#F97583">=</span><span style="color:#79B8FF">BATCH_SIZE</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">shuffle</span><span style="color:#F97583">=</span><span style="color:#79B8FF">True</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">test_loader  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> DataLoader(test_ds,  </span><span style="color:#FFAB70">batch_size</span><span style="color:#F97583">=</span><span style="color:#79B8FF">BATCH_SIZE</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 3. 网络结构：卷积 → 池化 → 全连接</span></span>
+<span class="line"><span style="color:#F97583">class</span><span style="color:#B392F0"> CNN</span><span style="color:#E1E4E8">(</span><span style="color:#B392F0">nn</span><span style="color:#E1E4E8">.</span><span style="color:#B392F0">Module</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#79B8FF"> __init__</span><span style="color:#E1E4E8">(self):</span></span>
+<span class="line"><span style="color:#79B8FF">        super</span><span style="color:#E1E4E8">().</span><span style="color:#79B8FF">__init__</span><span style="color:#E1E4E8">()</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.conv </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> nn.Conv2d(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">32</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">kernel_size</span><span style="color:#F97583">=</span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">padding</span><span style="color:#F97583">=</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)   </span><span style="color:#6A737D"># 28x28 → 28x28</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.pool </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> nn.MaxPool2d(</span><span style="color:#79B8FF">2</span><span style="color:#E1E4E8">)                              </span><span style="color:#6A737D"># 28x28 → 14x14</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.fc1  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> nn.Linear(</span><span style="color:#79B8FF">32</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 14</span><span style="color:#F97583"> *</span><span style="color:#79B8FF"> 14</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">128</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#79B8FF">        self</span><span style="color:#E1E4E8">.fc2  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> nn.Linear(</span><span style="color:#79B8FF">128</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">10</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">    def</span><span style="color:#B392F0"> forward</span><span style="color:#E1E4E8">(self, x):</span></span>
+<span class="line"><span style="color:#E1E4E8">        x </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> self</span><span style="color:#E1E4E8">.pool(F.relu(</span><span style="color:#79B8FF">self</span><span style="color:#E1E4E8">.conv(x)))   </span><span style="color:#6A737D"># (B,32,14,14)</span></span>
+<span class="line"><span style="color:#E1E4E8">        x </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> torch.flatten(x, </span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)               </span><span style="color:#6A737D"># (B,6272)</span></span>
+<span class="line"><span style="color:#E1E4E8">        x </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> F.relu(</span><span style="color:#79B8FF">self</span><span style="color:#E1E4E8">.fc1(x))</span></span>
+<span class="line"><span style="color:#E1E4E8">        x </span><span style="color:#F97583">=</span><span style="color:#79B8FF"> self</span><span style="color:#E1E4E8">.fc2(x)</span></span>
+<span class="line"><span style="color:#F97583">        return</span><span style="color:#E1E4E8"> x</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#E1E4E8">model </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> CNN().to(</span><span style="color:#79B8FF">DEVICE</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 4. 训练</span></span>
+<span class="line"><span style="color:#E1E4E8">optimizer </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> torch.optim.Adam(model.parameters(), </span><span style="color:#FFAB70">lr</span><span style="color:#F97583">=</span><span style="color:#79B8FF">1e-3</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">criterion </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> nn.CrossEntropyLoss()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">for</span><span style="color:#E1E4E8"> epoch </span><span style="color:#F97583">in</span><span style="color:#79B8FF"> range</span><span style="color:#E1E4E8">(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">EPOCHS</span><span style="color:#F97583">+</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">):</span></span>
+<span class="line"><span style="color:#E1E4E8">    model.train()</span></span>
+<span class="line"><span style="color:#F97583">    for</span><span style="color:#E1E4E8"> x, y </span><span style="color:#F97583">in</span><span style="color:#E1E4E8"> train_loader:</span></span>
+<span class="line"><span style="color:#E1E4E8">        x, y </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> x.to(</span><span style="color:#79B8FF">DEVICE</span><span style="color:#E1E4E8">), y.to(</span><span style="color:#79B8FF">DEVICE</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">        optimizer.zero_grad()</span></span>
+<span class="line"><span style="color:#E1E4E8">        out </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> model(x)</span></span>
+<span class="line"><span style="color:#E1E4E8">        loss </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> criterion(out, y)</span></span>
+<span class="line"><span style="color:#E1E4E8">        loss.backward()</span></span>
+<span class="line"><span style="color:#E1E4E8">        optimizer.step()</span></span>
+<span class="line"><span style="color:#79B8FF">    print</span><span style="color:#E1E4E8">(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">'Epoch </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">epoch</span><span style="color:#F97583">:2d</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">/</span><span style="color:#79B8FF">{EPOCHS}</span><span style="color:#9ECBFF">  loss=</span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">loss.item()</span><span style="color:#F97583">:.4f</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 5. 保存 &amp; 加载</span></span>
+<span class="line"><span style="color:#E1E4E8">torch.save(model.state_dict(), </span><span style="color:#9ECBFF">'mnist_cnn.pt'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">model.load_state_dict(torch.load(</span><span style="color:#9ECBFF">'mnist_cnn.pt'</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">map_location</span><span style="color:#F97583">=</span><span style="color:#79B8FF">DEVICE</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">model.eval()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 6. 推理</span></span>
+<span class="line"><span style="color:#F97583">def</span><span style="color:#B392F0"> preprocess</span><span style="color:#E1E4E8">(path):</span></span>
+<span class="line"><span style="color:#E1E4E8">    img </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> Image.open(path).convert(</span><span style="color:#9ECBFF">'L'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    img </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> img.resize((</span><span style="color:#79B8FF">28</span><span style="color:#E1E4E8">, </span><span style="color:#79B8FF">28</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">    img </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> transforms.ToTensor()(img)          </span><span style="color:#6A737D"># (1,28,28)</span></span>
+<span class="line"><span style="color:#E1E4E8">    img </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> img.unsqueeze(</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">)                    </span><span style="color:#6A737D"># (1,1,28,28)</span></span>
+<span class="line"><span style="color:#F97583">    return</span><span style="color:#E1E4E8"> img</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 从测试集里拿一张 7 做演示</span></span>
+<span class="line"><span style="color:#6A737D"># seven_idx = (test_ds.targets == 7).nonzero(as_tuple=True)[0][0]</span></span>
+<span class="line"><span style="color:#6A737D"># img_tensor = test_ds[seven_idx][0].unsqueeze(0)  # (1,1,28,28)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 用自己的图片：</span></span>
+<span class="line"><span style="color:#E1E4E8">img_tensor </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> preprocess(</span><span style="color:#F97583">r</span><span style="color:#9ECBFF">"</span><span style="color:#DBEDFF">C:</span><span style="color:#85E89D;font-weight:bold">\U</span><span style="color:#DBEDFF">sers</span><span style="color:#85E89D">\86</span><span style="color:#DBEDFF">182</span><span style="color:#79B8FF">\D</span><span style="color:#DBEDFF">esktop</span><span style="color:#79B8FF">\s</span><span style="color:#DBEDFF">z</span><span style="color:#79B8FF">.</span><span style="color:#DBEDFF">png</span><span style="color:#9ECBFF">"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#F97583">with</span><span style="color:#E1E4E8"> torch.no_grad():</span></span>
+<span class="line"><span style="color:#E1E4E8">    logits </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> model(img_tensor.to(</span><span style="color:#79B8FF">DEVICE</span><span style="color:#E1E4E8">))</span></span>
+<span class="line"><span style="color:#E1E4E8">    probs  </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> torch.softmax(logits, </span><span style="color:#FFAB70">dim</span><span style="color:#F97583">=</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">    pred   </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> logits.argmax(</span><span style="color:#79B8FF">1</span><span style="color:#E1E4E8">).item()</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'预测结果：'</span><span style="color:#E1E4E8">, pred)</span></span>
+<span class="line"><span style="color:#79B8FF">print</span><span style="color:#E1E4E8">(</span><span style="color:#9ECBFF">'概率分布：'</span><span style="color:#E1E4E8">, probs.cpu().numpy())</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#6A737D"># 7. 可视化</span></span>
+<span class="line"><span style="color:#E1E4E8">plt.imshow(img_tensor[</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">,</span><span style="color:#79B8FF">0</span><span style="color:#E1E4E8">], </span><span style="color:#FFAB70">cmap</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">'gray'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">plt.title(</span><span style="color:#F97583">f</span><span style="color:#9ECBFF">'Predicted: </span><span style="color:#79B8FF">{</span><span style="color:#E1E4E8">pred</span><span style="color:#79B8FF">}</span><span style="color:#9ECBFF">'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">plt.axis(</span><span style="color:#9ECBFF">'off'</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">plt.show()</span></span></code></pre>
+<p><img src="/cbsyy.github.io/media/feishu/K0V4bNYFeoALsTxYyofcngqpnMf.webp" alt="文章配图"></p>
+<p>可以看到，当前已能够正确识别出了数字 7</p>
+<hr>
+<h2 id="总结">总结</h2>
+<p>卷积神经网络通过引入卷积层和池化层，相比传统全连接网络：</p>
+<ul>
+<li>✅ 显著减少了参数量</li>
+<li>✅ 降低了计算复杂度</li>
+<li>✅ 提高了对图像特征的提取能力</li>
+<li>✅ 增强了模型的泛化能力</li>
+</ul>
+<p>这种设计使得 CNN 特别适合处理图像等具有空间结构的数据。</p>
+<p>当然了，CNN 固然好用，却也并不能适配所有场景，比如，语义理解、问答任务。由于缺乏对复杂语义关系的深度建模能力，因此在需要精准理解、推理和生成自然语言的问答场景中，往往力不从心。</p>
+<p>关于 CNN 呢，我找到一个可以可视化展示的网站，感兴趣的朋友可以去体验一下</p>
+<p><img src="/cbsyy.github.io/media/feishu/R0yWbxeqSoo4RIxXMaHc6rbIn8c.webp" alt="文章配图"></p>
+<p>链接如下：</p>
+<p><a href="https://poloclub.github.io/cnn-explainer/#article-input">https://poloclub.github.io/cnn-explainer/#article-input</a></p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-08-19<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/LlMhdYg6yoeh7oxnj2QcB0Ntnlo" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

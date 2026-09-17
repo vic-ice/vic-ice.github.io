@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="马尔可夫性 随机过程是一个很浅显的概念，是一个随机的现象随着时间的变化而随机进行演变的过程，比如气候，马尔可夫性说的是——当前状态 St 已经充分包含了所有会影响未来的信息，不需要再知道 S\{t-1}， S\{t-2}， … 的具…"><title>强化学习---马尔可夫决策过程 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-sqbcdudcrorvsjxup2sca3s1noh/"><meta property="og:title" content="强化学习---马尔可夫决策过程 · BINGLU"><meta property="og:description" content="马尔可夫性 随机过程是一个很浅显的概念，是一个随机的现象随着时间的变化而随机进行演变的过程，比如气候，马尔可夫性说的是——当前状态 St 已经充分包含了所有会影响未来的信息，不需要再知道 S\{t-1}， S\{t-2}， … 的具…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">强化学习</div><h1>强化学习---马尔可夫决策过程</h1><p class="quiet">胡守谦 · 2025-10-22 · 5 分钟</p><details class="article-toc"><summary>本文目录 · 3 节</summary><nav aria-label="本文目录"><a href="#马尔可夫性" style="padding-left:0px">马尔可夫性</a><a href="#马尔可夫链" style="padding-left:0px">马尔可夫链</a><a href="#马尔可夫决策过程" style="padding-left:0px">马尔可夫决策过程</a></nav></details><div class="prose"><p><img src="/cbsyy.github.io/media/feishu/DHQcbHL9IoMY3GxZ5I9cCWZ8nrf.webp" alt="文章配图"></p>
+<h2 id="马尔可夫性">马尔可夫性</h2>
+<p>随机过程是一个很浅显的概念，是一个随机的现象随着时间的变化而随机进行演变的过程，比如气候，马尔可夫性说的是——当前状态 S_t 已经充分包含了所有会影响未来的信息，不需要再知道 S_{t-1}， S_{t-2}， … 的具体历史，即</p>
+<p><img src="/cbsyy.github.io/media/feishu/T6PAbdZlUoiUFoxWir6cyTf9nZd.webp" alt="文章配图"></p>
+<p>当某一个时刻的状态只取决于上一时刻的状态，而与更早的历史状态无关，这个随机过程就被称为具有<strong>马尔可夫性质</strong>。</p>
+<h2 id="马尔可夫链">马尔可夫链</h2>
+<p><strong>马尔可夫过程（Markov process）是具有马尔可夫性质（Markov property）的随机过程。</strong><br>
+<strong>当时间和状态都是离散的情况下，这种过程被称为马尔可夫链（Markov chain）</strong>。</p>
+<p>何为离散？何为连续？</p>
+<p>拿时间举例，离散就是 t=1，2，3，4，5 这种一步步的状态，每次可以取一个单位如整数 1、2、3，而连续就是 t∈[0，+∞），可以取任意单位，整数分数小数等等如 1.3，2，3/4</p>
+<p>核心概念：未来只取决于当前，而不取决于过去</p>
+<p><img src="/cbsyy.github.io/media/feishu/Hhh4bpWbIoO6lxx9llzcmKs8nb4.webp" alt="文章配图"></p>
+<p>这个意思就是说，过去的状态不重要，未来的状态只基于现在决定，即当前的状态就是之前状态之和的压缩，每个时刻的状态，S（t|s）就能够代表 S（t-1|s）这一个由当前状态到下一状态的一个演变过程就被称为马尔可夫链，</p>
+<p>但是这个其实更偏向于规律发现，因为它并没有奖励的概念，仅有状态以及状态的变化，在马尔可夫链中，没有“动作/决策”概念，转移概率 <strong><em>P</em>（<em>St</em>+1=<em>s</em>′∣<em>St</em>=<em>s</em>）</strong> 是固定不变的，所以看起来像是“自然演化”。</p>
+<p>而强化学习的任务，需要“奖励”与“决策”，很明显我们没办法直接去使用马尔可夫链来优化训练强化学习模型，不过这并不代表马尔可夫链没有意义，它依然可以应用于如房价预测，天气预测等方面，因为马尔可夫链的核心是<strong>随机性</strong>的状态转移。</p>
+<p>比如今天天气晴【当前状态】–&gt;明天天气【晴或阴】</p>
+<p>它受到当前天气影响，今天天气为晴天、那么明天天气有 80%概率会是晴天，今天天气为阴天，那么明天天气 20 概率是晴天，本身晴天阴天概率都是 50%，只不过受到现在天气的因素，从而影响到未来。</p>
+<p><img src="/cbsyy.github.io/media/feishu/QcD3bT7t8oaR7cxlTBIceVhtnqc.webp" alt="文章配图"></p>
+<p>如图：我们以上班通勤举例，右边是<strong>转移概率矩阵</strong>，代表每步转移概率，你现在在哪”已经包含了所有会影响下一步的信息，今天怎么来的公司与昨天堵了多久，昨天是否请假都不影响。</p>
+<p>现在在家需要从家到地铁口，但是依然没到公司，所以依然需要向着公司移动；</p>
+<p>现在在地铁口，可能需要从地铁口到家（忘带手机）或忘带眼镜（看不清上错线路）或正常到公司；</p>
+<p>而家到公司就可立马投入牛马状态，无需移动。</p>
+<p>而强化学习需要有奖励，来引导当前任务的走向，同时也需对每一状态来进行判断，比如象棋，我们并不知道当前的步数的下一步会对结果有什么导向，所以我们需要知道每一刻的步数对未来的影响，而非仅当前的步数和未来的，这就引入了新的概念，马尔可夫决策过程。</p>
+<h2 id="马尔可夫决策过程">马尔可夫决策过程</h2>
+<p>马尔可夫链：状态–&gt;新状态</p>
+<p>马尔可夫决策过程：状态–&gt;动作–&gt;–&gt;新状态</p>
+<p>而动作基于什么？</p>
+<p>基于策略，而策略的定义了在给定状态下，智能体选择动作的方式，可以是确定性的，也可以是随机的。</p>
+<p><img src="/cbsyy.github.io/media/feishu/J8wOboqewomZPqxTifrcoVo6nme.webp" alt="文章配图"></p>
+<p>以象棋来举例，就是要获胜的最具性价比的走法（用最少的走子次数换取最大的胜率），而策略的成功不只看眼前，而要基于最大化长期累计奖励（期望回报）来学习到的，因为好的策略能在长期内带来最高的累积奖励（长期胜率最高）。</p>
+<p>那么奖励是什么？</p>
+<p>简单来说每一步的动作执行后，</p>
+<ul>
+<li>吃子了 → +1</li>
+<li>被吃子 → -1</li>
+<li>胜利 → +100</li>
+<li>失败 → -100</li>
+<li>普通走子 → 0</li>
+</ul>
+<p>因为一步并不能直接决定全局的胜负，所以它只能影响到当前这一步走完后对局势的变化，所以每一步仅作为对当前这步棋是好棋还是臭棋的判断，这就涉及到了奖励的积累，而在<strong>长期累计奖励</strong>后达到最终目标后，把 “未来奖励” 转换为 “现在价值” 的一个权重。如果 γ 接近 1，则未来和现在的奖励几乎同等；如果 γ小，则更重视即时奖励</p>
+<ul>
+<li>
+<p>γ 是平衡长期和短期利益的折扣因子，表示我们对“未来奖励”的信任程度：</p>
+<ul>
+<li>γ ≈ 1：更看重长期利益（比如象棋中牺牲一些子换后续胜利）</li>
+<li>γ ≈ 0：更看重眼前利益（比如只吃子不管后果）</li>
+</ul>
+</li>
+</ul>
+<p>而<strong>价值函数</strong>是用来评估某个状态或状态-动作组合“有多好”的函数。<br>
+它告诉我们：“如果从这个状态出发，按照某策略执行下去，长期来看能得到多少回报”。</p>
+<p>价值函数有两种常见形式：</p>
+<ol>
+<li>状态价值函数 V（s）<br>
+站在局面 s 上，按策略 π 走下去，平均能拿到的折扣回报。</li>
+</ol>
+<p><img src="/cbsyy.github.io/media/feishu/TJ5zbCK6No6yVzxnWTXcGlPenge.webp" alt="文章配图"></p>
+<ol>
+<li>动作价值函数 Q（s，a）<br>
+站在局面 s，先下特定一步 a，之后再按策略 π 走，平均能拿到的折扣回报。</li>
+</ol>
+<p><img src="/cbsyy.github.io/media/feishu/KvZxbei0Ro5uwYxLvrWczkKRnUd.webp" alt="文章配图"></p>
+<ul>
+<li>状态价值 = 按策略加权平均所有动作价值；</li>
+<li>动作价值 = 即时奖励 + 折扣后的下一状态价值按转移概率加权平均。</li>
+</ul>
+<p>总结来说就是<strong>马尔可夫决策过程</strong>就是：策略指导行动，奖励提供反馈，价值函数衡量长期优劣。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-10-22<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/SQBcdUDCRorVsjxUP2Sca3S1noh" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

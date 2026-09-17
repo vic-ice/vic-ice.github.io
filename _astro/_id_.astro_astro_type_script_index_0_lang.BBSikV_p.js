@@ -1,0 +1,1 @@
+import{t as e}from"./urls.CSbU58PB.js";var t=new URLSearchParams(location.search),n=document.querySelector(`#article-back`);if(n){let r=new URLSearchParams;for(let e of[`category`,`sort`]){let n=t.get(e);n&&r.set(e,n)}n.href=e(`/`)+(r.size?`?`+r:``)}if(t.get(`from`)===`map`){let t=document.querySelector(`#article-back`);t&&(t.href=e(`/map/`),t.textContent=`← 返回文章地图`)}

@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="RAG 与微调：对比分析 - RAG： 在查询时使用外部知识增强 LLM；更适合动态知识，并且以更具成本效益的方式整合新信息 。 - 微调： 在特定数据集上进一步训练 LLM，使其适应特定任务或领域；更适合学习数据集中的特定风格或模…"><title>RAG与微调对比 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-hcmodojkqog8vhxre6bcsbbinef/"><meta property="og:title" content="RAG与微调对比 · BINGLU"><meta property="og:description" content="RAG 与微调：对比分析 - RAG： 在查询时使用外部知识增强 LLM；更适合动态知识，并且以更具成本效益的方式整合新信息 。 - 微调： 在特定数据集上进一步训练 LLM，使其适应特定任务或领域；更适合学习数据集中的特定风格或模…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">Agent 与 RAG</div><h1>RAG与微调对比</h1><p class="quiet">胡守谦 · 2025-05-14 · 4 分钟</p><details class="article-toc"><summary>本文目录 · 3 节</summary><nav aria-label="本文目录"><a href="#rag-与微调对比分析" style="padding-left:0px">RAG 与微调：对比分析</a><a href="#rag-与微调的比较" style="padding-left:0px">RAG 与微调的比较</a><a href="#结论" style="padding-left:0px">结论</a></nav></details><div class="prose"><h2 id="rag-与微调对比分析">RAG 与微调：对比分析</h2>
+<ul>
+<li><strong>RAG：</strong> 在查询时使用外部知识增强 LLM；更适合动态知识，并且以更具成本效益的方式整合新信息 。</li>
+<li><strong>微调：</strong> 在特定数据集上进一步训练 LLM，使其适应特定任务或领域；更适合学习数据集中的特定风格或模式 。</li>
+<li><strong>权衡：</strong> RAG 依赖于外部知识来源的数据质量，且推理成本较高；微调的训练成本可能很高，训练效果不能保证，且存在过拟合风险 。</li>
+</ul>
+<p><strong>互补方法：</strong> RAG 和微调有时可以结合使用以获得最佳性能。</p>
+<h2 id="rag-与微调的比较"><strong>RAG 与微调的比较</strong></h2>
+<table>
+<thead>
+<tr>
+<th>特征</th>
+<th>RAG</th>
+<th>微调</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>知识更新</td>
+<td>通过外部知识库实时动态更新</td>
+<td>训练后静态，需要重新训练才能更新</td>
+</tr>
+<tr>
+<td>数据新鲜度</td>
+<td>高，始终访问最新信息</td>
+<td>中等，取决于重新训练的频率</td>
+</tr>
+<tr>
+<td>准确性</td>
+<td>取决于检索质量，基于检索到的数据</td>
+<td>特定领域任务准确性高，但领域外可能出现幻觉</td>
+</tr>
+<tr>
+<td>可扩展性</td>
+<td>知识库大小可良好扩展</td>
+<td>大型数据集需要大量资源</td>
+</tr>
+<tr>
+<td>计算成本</td>
+<td>更新成本较低，推理成本较高（检索）</td>
+<td>训练成本高，推理成本较低</td>
+</tr>
+<tr>
+<td>实施</td>
+<td>中等复杂性，涉及设置检索管道</td>
+<td>高复杂性，需要深度学习专业知识</td>
+</tr>
+<tr>
+<td>开发者控制</td>
+<td>对知识来源的控制更多，对生成风格的控制更少</td>
+<td>对生成风格和领域专业知识的控制更多</td>
+</tr>
+<tr>
+<td>幻觉风险</td>
+<td>较低，基于外部数据</td>
+<td>可以通过领域特定数据减少，但仍然可能</td>
+</tr>
+<tr>
+<td>数据要求</td>
+<td>大型非结构化知识库</td>
+<td>通常需要大型高质量标注数据集</td>
+</tr>
+<tr>
+<td>透明度</td>
+<td>可以提供来源引用</td>
+<td>透明度较低，知识嵌入在模型参数中</td>
+</tr>
+<tr>
+<td>资源密集程度</td>
+<td>推理时较高（检索），更新时较低</td>
+<td>训练时较高，推理时较低</td>
+</tr>
+</tbody>
+</table>
+<p><strong>何时使用RAG？</strong></p>
+<ul>
+<li>当需要LLM能够访问并利用最新的、动态变化的信息时。</li>
+<li>当需要LLM能够回答特定领域或私有数据相关的问题，需要访问实时或频繁更新信息的聊天机器人和虚拟助手时。</li>
+<li>当数据量极其庞大希望以较低的成本和较快的速度将外部知识整合到LLM中时。</li>
+<li>当需要LLM的回答能够追溯到具体的证据来源，以提高可信度和透明度时。</li>
+</ul>
+<p><strong>何时使用微调？</strong></p>
+<ul>
+<li>当需要LLM学习特定的风格、语气或输出格式时（例如营销材料、创意写作）。</li>
+<li>当需要LLM执行特定的下游任务，（例如文本分类、情感分析或命名实体识别），并且有针对这些任务的标注数据时。</li>
+<li>当希望将一些核心的、相对静态的领域知识（例如法律、医疗、金融）深层地融入到模型中，以便在推理时能够更高效地利用这些知识。</li>
+<li>当数据量有限，但希望模型能够更好地理解和处理这些特定数据时。</li>
+</ul>
+<p><strong>混合方法</strong></p>
+<p>在某些情况下，结合微调和 RAG 的混合方法可以实现最佳性能。例如，可以先对模型进行微调以获得领域特定的理解，然后在 RAG 架构中使用该模型来访问最新的信息。</p>
+<h2 id="结论"><strong>结论</strong></h2>
+<p>检索增强生成 (RAG) 和微调是两种重要的技术，用于提升大型语言模型的性能。RAG 通过在推理时检索外部知识来增强 LLM 的能力，使其能够提供更准确、相关和及时的响应，尤其适用于需要处理动态数据的场景。而微调则通过在特定数据集上进行额外的训练来调整 LLM 的内部参数，使其在特定领域或任务上表现更出色。选择哪种方法取决于具体的应用场景、数据特性、成本考量以及对开发者技能的要求。在某些复杂的应用中，结合使用 RAG 和微调的混合方法可以充分发挥两者的优势，从而实现更优的性能。随着 LLM 技术的不断发展，为了解决问题，出现了很多优化方法和技术思路，会在随后的文章进行具体介绍，敬请期待后续更新文章……</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-05-14<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/HcModojKqog8vhxrE6bcSbbInef" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="强化学习（Reinforcement Learning，简称 RL）是机器学习的一个重要分支，其核心思想是让智能体（Agent）在一个环境中通过不断地试错和学习，来最大化某个奖励信号。中国象棋，作为一项策略性极强的双人博弈游戏，是理…"><title>强化学习基础 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-wntjdfhedouttdxxsgpcupz9njd/"><meta property="og:title" content="强化学习基础 · BINGLU"><meta property="og:description" content="强化学习（Reinforcement Learning，简称 RL）是机器学习的一个重要分支，其核心思想是让智能体（Agent）在一个环境中通过不断地试错和学习，来最大化某个奖励信号。中国象棋，作为一项策略性极强的双人博弈游戏，是理…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">强化学习</div><h1>强化学习基础</h1><p class="quiet">胡守谦 · 2025-09-18 · 6 分钟</p><details class="article-toc"><summary>本文目录 · 3 节</summary><nav aria-label="本文目录"><a href="#第一阶段预训练了解基本口诀" style="padding-left:28px">第一阶段：预训练——了解基本口诀</a><a href="#第二阶段微调掌握完整规则" style="padding-left:28px">第二阶段：微调——掌握完整规则</a><a href="#第三阶段强化学习从菜鸟到高手" style="padding-left:28px">第三阶段：强化学习——从“菜鸟”到“高手”</a></nav></details><div class="prose"><p>强化学习（Reinforcement Learning，简称 <strong>RL</strong>）是机器学习的一个重要分支，其核心思想是让智能体（Agent）在一个环境中通过不断地试错和学习，来最大化某个奖励信号。中国象棋，作为一项策略性极强的双人博弈游戏，是理解强化学习的绝佳范例。</p>
+<p>中国象棋的胜利目标是将对方的可过河子力吃光，最终吃掉老将/帅，或迫使对方投子认负。我们可以将玩象棋从菜鸟到高手的成长历程，类比于一个**大模型（LLM）**的三个训练阶段：<strong>预训练（PT）</strong>、<strong>微调（SFT）<strong>和</strong>强化学习（RLHF）</strong>。</p>
+<h4 id="第一阶段预训练了解基本口诀">第一阶段：预训练——了解基本口诀</h4>
+<p><img src="/cbsyy.github.io/media/feishu/P9hcbovfBoPobixDqgyckftrnvb.webp" alt="文章配图"></p>
+<p>在对象棋一无所知的状态下，我们首先要学习基本口诀：“马走日，象走田，车行直路炮翻山，士走斜线护将边，小卒一去不回还。”</p>
+<p>这个阶段，就如同大模型的<strong>预训练（PT）</strong>。它让你知道有哪些“子”，以及它们的基本“走法”。模型通过海量数据，掌握了基础的语言模式，但它还远未理解如何进行有逻辑、有策略的对话。</p>
+<h4 id="第二阶段微调掌握完整规则">第二阶段：微调——掌握完整规则</h4>
+<p><img src="/cbsyy.github.io/media/feishu/WzSMbbp1coRDqkxVteOczoT0n0g.webp" alt="文章配图"></p>
+<p>懂了基本口诀后，我们开始学习更具体的规则，比如“将/帅不得碰面”、“红方先行”、“马被撇马腿”以及“象被塞眼不得走”等等。</p>
+<p>这个过程，便是大模型的<strong>微调（SFT）</strong>。它让你知道如何进行一场完整的对局。但仅仅掌握规则，你还只是一个“入门级菜鸟”，离“精通”还差得远。</p>
+<h4 id="第三阶段强化学习从菜鸟到高手">第三阶段：强化学习——从“菜鸟”到“高手”</h4>
+<p><img src="/cbsyy.github.io/media/feishu/NE4nblrSVo6pzaxOhcIcXUmSnpb.webp" alt="文章配图"></p>
+<p>从“菜鸟”到“高手”，没有捷径，需要不断地练习。但关键在于，必须是“有脑子”的练习。随便下上一百年，你可能也只是一个熟练的“菜鸟”罢了。</p>
+<p>那么，如何判断自己下得有没有“脑子”呢？作为小白，我们很难自我评估。所以，我们需要一个“专家”<strong>来给我们打分，但专家太高贵，我们只能请一位</strong>“专家助理”来帮忙。</p>
+<p>这个专家助理的打分机制很关键。它不能只基于“吃子”来打分，因为“吃子”不等于取胜，这样模型会为了吃子而吃子，偏离了最终目标。它也不能简单地“走对 +1 分，走错 -1 分”，因为象棋的每一步棋都可能对最终结果产生深远影响，很难简单判定对错。</p>
+<p>所以，我们可以设定：每走几步，专家助理就进行一次打分。这个分数，是基于你的走法是否符合<strong>棋理</strong>，即“为什么这样走更好”的底层逻辑。比如，你操控“车”，本可以两步吃掉对方核心子力，却绕了一大圈，走了很多无用步数。这就是不合棋理，会扣分。</p>
+<p>一整局下来，你将有一个最终得分。最初，你的得分肯定很低（除非你是绝世神童），但随着不断对局和总结，你的技术会突飞猛进。</p>
+<p>在这个过程中，我们可能会遇到一些“小插曲”：</p>
+<ul>
+<li><strong>奖励作弊</strong>：为了激励你，专家说：“什么时候达到初级水平，就奖励你睡一天懒觉。”结果你达到初级天天睡懒觉，棋力毫无长进。专家发现后，决定提高标准：“必须达到高级，才有奖励！”本以为压力转换为动力可以“大力出奇迹”，没想到你很快就达到了高级水平。</li>
+<li><strong>作弊揭秘</strong>：对此，专家百思不得其解，问了专家助理才知道：为了达到目的，你学会了偷懒和作弊——你偷了一本高级棋谱，照着下棋！</li>
+</ul>
+<p><img src="/cbsyy.github.io/media/feishu/DT4HbAS0KoMCv6x8howc1OLCn0c.webp" alt="文章配图"></p>
+<p>为了解决这个问题，专家只能设定一个<strong>奖励区间</strong>，即你的奖励只能基于当前水平有所提升，而不能通过作弊等方式一次性跳跃太多。</p>
+<p>这就是强化学习的整个过程：通过一个<strong>设计精良的奖励机制</strong>，引导我们在不断地对弈和学习中，真正地理解“棋理”，最终从“菜鸟”成长为真正的“高手”。</p>
+<hr>
+<p>现在，让我们把故事中的角色和概念，与强化学习的专业术语进行精确对齐：</p>
+<ul>
+<li><strong>象棋玩家</strong>：在强化学习中，被称为<strong>智能体（Agent）</strong>。这是进行学习和决策的主体。</li>
+<li><strong>象棋棋盘和规则</strong>：这便是<strong>环境（Environment）</strong>。智能体在这个环境中进行互动。</li>
+<li><strong>下棋的每一步走法</strong>：这是<strong>行动（Action）</strong>。智能体在环境中做出的具体决策。</li>
+<li><strong>每一步下完后，棋盘上的新局面</strong>：这被称为<strong>状态（State）</strong>。环境在智能体行动后所呈现的新情况。</li>
+<li><strong>“专家助理”的打分</strong>：这就是<strong>奖励（Reward）</strong>。环境对智能体行动的反馈，可以是正面的（奖励）也可以是负面的（惩罚）。</li>
+<li><strong>“专家助理”本身</strong>：这便是<strong>奖励模型（Reward Model）</strong>。这是一个独立的模型，专门用来对智能体的行为进行评估和打分。它的训练数据来自人类的偏好和反馈，因此也叫 <strong>RLHF （Reinforcement Learning from Human Feedback）</strong>。</li>
+<li><strong>偷棋谱作弊</strong>：在强化学习中，这被称为<strong>奖励黑客（Reward Hacking）或奖励作弊</strong>。智能体找到了获得高奖励的捷径，但这种捷径并不符合设计的初衷或真正目标。</li>
+<li><strong>限制奖励区间</strong>：这是为了解决奖励作弊，引入的一种<strong>约束机制</strong>，比如 <strong>PPO（Proximal Policy Optimization）</strong> 算法中的 <strong>KL 散度（KL Divergence）</strong> 惩罚项。它确保新策略（下棋方法）与旧策略（之前的方法）不会相差太远，从而避免智能体通过“偷懒”或“作弊”来快速获得奖励。</li>
+</ul>
+<p>最后，我们用一个公式来概括这个学习过程。强化学习的目标，就是让智能体学习到一个最优的策略 π（也就是下棋的方法），从而最大化<strong>预期回报</strong>。这个过程可以由下面强化学习的目标函数公式来表示：</p>
+<p><img src="/cbsyy.github.io/media/feishu/Tbjdbd0M7o7hX1xbwfYcuvptn9c.webp" alt="文章配图"></p>
+<p>简单来说，这个公式的含义是：</p>
+<ul>
+<li><strong>maxπ</strong>：找到一个最好的下棋策略 π（pi）。</li>
+<li><strong>E</strong>：求平均值或期望。</li>
+<li><strong>∑R</strong>：将每一步的奖励 R 加起来。</li>
+<li><strong>st，at</strong>：在每一个时间点 t 的状态（局面）和行动（走法）。</li>
+</ul>
+<p>整个公式的目标就是：<strong>找到一个下棋策略，使得在整个对局过程中，所获得的奖励总和的期望值最大化</strong>。这便是从“菜鸟”成长为“高手”的数学本质。</p>
+<p>直接去看强化学习的公式以及概念可能会很懵逼，而本文则能够帮助你更好地理解，让你知其然，也知其所以然。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-09-18<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/WNtJdfHeDouTtDxXSGpcUpZ9njd" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

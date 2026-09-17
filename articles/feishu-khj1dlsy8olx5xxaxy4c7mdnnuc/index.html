@@ -1,0 +1,45 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="为什么我们需要正则化？ 正则化是在模型训练时抑制模型过拟合，提升模型的性能的一种方式，同时它还能提高稳定性、减少噪声影响、提升泛化。 什么是过拟合？ 过拟合就是模型在训练集上表现很好，但在测试集上表现很差，说明它可能不是在学习规律，…"><title>L1，L2正则化 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-khj1dlsy8olx5xxaxy4c7mdnnuc/"><meta property="og:title" content="L1，L2正则化 · BINGLU"><meta property="og:description" content="为什么我们需要正则化？ 正则化是在模型训练时抑制模型过拟合，提升模型的性能的一种方式，同时它还能提高稳定性、减少噪声影响、提升泛化。 什么是过拟合？ 过拟合就是模型在训练集上表现很好，但在测试集上表现很差，说明它可能不是在学习规律，…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">机器学习</div><h1>L1，L2正则化</h1><p class="quiet">胡守谦 · 2025-11-14 · 7 分钟</p><details class="article-toc"><summary>本文目录 · 8 节</summary><nav aria-label="本文目录"><a href="#为什么我们需要正则化" style="padding-left:0px">为什么我们需要正则化？</a><a href="#什么是过拟合" style="padding-left:0px">什么是过拟合？</a><a href="#为啥会这样" style="padding-left:0px">为啥会这样？</a><a href="#什么是l1正则化" style="padding-left:0px">什么是L1正则化？</a><a href="#什么是l2正则化" style="padding-left:0px">什么是L2正则化？</a><a href="#正则化通过什么方式判断什么特征重要" style="padding-left:0px">正则化通过什么方式判断什么特征重要？</a><a href="#什么时候l1什么时候l2" style="padding-left:0px">什么时候L1,什么时候L2？</a><a href="#补充说明" style="padding-left:0px">补充说明：</a></nav></details><div class="prose"><h2 id="为什么我们需要正则化"><strong>为什么我们需要正则化？</strong></h2>
+<p>正则化是在模型训练时抑制模型过拟合，提升模型的性能的一种方式，同时它还能提高稳定性、减少噪声影响、提升泛化。</p>
+<h2 id="什么是过拟合">什么是过拟合？</h2>
+<p><strong>过拟合</strong>就是模型在训练集上表现很好，但在测试集上表现很差，说明它可能不是在学习规律，而是在<strong>死记硬背训练数据</strong>中的噪声或偶然模式，或者可能是训练时分布与测试不一致（数据偏移）。</p>
+<p>欠拟合就是训练预测都不行，hh。</p>
+<p><img src="/cbsyy.github.io/media/feishu/AOEdb33izoDMjQxAAw8cML0Sn2f.webp" alt="文章配图"></p>
+<p><img src="/cbsyy.github.io/media/feishu/Tt5qb5cXqoM0Scxk2KvcvvR9nQc.webp" alt="文章配图"></p>
+<p><img src="/cbsyy.github.io/media/feishu/H7Uzbe0Epoq0jyxdMFFcEXIunje.webp" alt="文章配图"></p>
+<h2 id="为啥会这样">为啥会这样？</h2>
+<p><img src="/cbsyy.github.io/media/feishu/SFxxbnwEzotGSnxLgCwcnZg0nJf.webp" alt="文章配图"></p>
+<p>可能模型在训练过程中，被数据中的噪声影响或者样本量太少，或模型参数太多，模型过度关注某些并不重要的特征（相当于把大部分精力花费在没用的地方），或训练时间过久（训练太久 → 模型开始记住噪声 → 泛化下降）等多种因素影响。</p>
+<p>而要解决这种问题，就引入了正则化的概念，正则化就是相当于在模型训练时，对模型参数加入了惩罚项来引导模型学习，正则化常见方法可采用l1，l2正则化的方式来进行优化，以及早停机制（模型训练过程中损失不再下降或损失回升【过拟合】中断模型训练）或Dropout，数据增强等等方式，当然了这些都是属于不同类型的。</p>
+<p>区别在于L1,L2正则化直接作用于损失函数，早停不改变损失函数，在损失不再降低直接停止模型训练。而Dropout相当于随机失活部分神经元，减少模型对单个神经元的依赖，数据增强：作用在输入数据，降低模型记住具体样本的风险，通常是对图像进行旋转、缩放、翻转、裁剪这些操作等等。</p>
+<h2 id="什么是l1正则化">什么是L1正则化？</h2>
+<p>L1正则化是在模型训练时，对某些不重要特征权重直接置0（相当于删除），让模型放弃这个对当前任务来说重要性程度低的特征，迫使模型从相对更重要特征中寻找规律。</p>
+<h2 id="什么是l2正则化">什么是L2正则化？</h2>
+<p>L2正则化就是在模型训练时，L2 会将对损失贡献较小的权重压缩，接近0但不会变为0，同样是为了让模型能更好的关注更重要的特征进行学习以提高模型能力。</p>
+<p>所以在正则化的优化过程中，那些梯度小、对损失贡献少的特征，其权重更容易被 L1 推到 0 或被 L2 压缩。</p>
+<h2 id="正则化通过什么方式判断什么特征重要">正则化通过什么方式判断什么特征重要？</h2>
+<p>正则化并不会关注哪个特征更重要，拿一个最简单例子y=wx+b举例，如果有3个特征那就是y=w1x+w2x+w3x+b，正则化惩罚的是权重参数 w，而不是输入特征 x，也通常不会作用于偏置 b，所以当模型发现哪个特征不重要，就降低对应w的权重来实现优化。</p>
+<p>本质上特征的重要性由损失函数 + 梯度共同决定。正则化会优先压缩、剔除那些对损失贡献小的权重，使模型更关注真正有用的特征。</p>
+<p>特征对损失影响大 → 梯度大 → w 不会被压缩</p>
+<p>特征对损失影响小 → 梯度小 → w 容易被正则化压缩为 0 或趋近 0</p>
+<h2 id="什么时候l1什么时候l2">什么时候L1,什么时候L2？</h2>
+<p>当你的特征维度很高、噪声特征多、希望模型自动进行特征选择或需要更强可解释性时，使用 <strong>L1 正则化</strong>；</p>
+<p>当你更关注模型的稳定性、平滑性以及在深度学习等连续特征场景下的泛化能力时，使用 <strong>L2 正则化</strong>；</p>
+<p>当你既想筛掉部分无用的特征，又想要模型能够保持稳定不过度稀疏特征时，用 **L1 + L2（Elastic Net），**先对权重做整体（L2），再对小权重做（L1），最终把非常小的 w 直接推到 0。</p>
+<p>这里虽然把非常小的w都是推到0，但是因为是先L2(先平滑粗筛了重要性低的，基于这个再删特征），会比直接L1粗暴删更稳定，因为L1如果遇到两个低相关特征的权重的，会随机删一个，这明显不可解释，效果不如L1+L2。</p>
+<p>例子：</p>
+<p>比如在文本分类任务中，常见机器学习模型如xgboost，虽然叶子节点可有效进行分裂，天然支持特征选择，但是如果数据复杂，维度过高（或构建过多衍生特征），依然会导致过拟合，在百万级数据下，会有很多噪声数据，以及数据本身偏差，这种情况可以使用L1压缩或直接淘汰掉贡献极小的叶子节点，用L2避免叶子节点输出过大，这种方式既能稀疏化冗余特征，又能保持模型的平滑性和泛化能力。</p>
+<p>而在某些场景，我们并不能直接将特征删除，比如医疗场景某些宝贵数据，非常关键的信息不允许直接删除，这种情况就可采用L2来降低无关特征对模型的影响，从而获得更稳定、更可控的效果。</p>
+<p>而我们熟知的神经网络（深度学习），默认就是采用L2，因为网络结构不能变，所以CNN、RNN、BERT，以及大模型基本都是采用的L2。</p>
+<p>总结：L1的原理就是有两个高度相似的低关联性特征，随机砍一个，这样每次跑数据的结果不唯一，没解释性，适合于特征非常多，想快速实现筛除多余特征的场景。</p>
+<p>而L2不会这么不公平，L2如果碰到俩高度相似的低关联性特征，它会把这俩的权重都缩小到同一个范围，同时保留下来，这样可使得结果稳定，可解释性强，适合特征有物理意义不能直接删的场景。</p>
+<p>而Xgboost就是典型同时支持L1+L2的模型，树模型砍得不是线性模型的那个特征权重w，而分裂过程中每个叶子节点的得分w。</p>
+<p>L1相当于剪枝（弱叶子被剪掉），让模型更简单，不冗余；</p>
+<p><strong>L2</strong>则是限制叶子节点权重让叶子节点更平滑，防止叶子节点分值太极端。</p>
+<h2 id="补充说明">补充说明：</h2>
+<p><strong>L1,L2正则化</strong>是在训练过程中进行优化的，<strong>模型训练开始</strong>就在<strong>损失函数</strong>中加入 <strong>L1 或 L2 惩罚</strong>来进行了约束。正则化主要作用于对特征的选择，在训练过程中引导模型识别哪些特征对任务的贡献较小，从而抑制模型对这些无关特征样本的学习，尽量减少复杂度，减少过拟合的风险。</p>
+<p>而剪枝是在模型训练完成后，根据当前需求对模型进行简化的操作，而剪枝主要针对于<strong>模型层面</strong>，通过裁剪<strong>决策树模型</strong>的复杂分支结构（贡献较小的分支）来减少过拟合风险。</p>
+<p><strong>剪枝</strong>分两种，一种是预剪枝，一种是后剪枝。</p>
+<p>预剪枝在训练过程中，通过 <strong>限制树的深度</strong> 或 <strong>最小样本数</strong> 等方式， <strong>阻止决策树进一步分裂</strong>。预剪枝的目的是在训练过程中就 <strong>提前停止</strong> 一些不必要的分支生成，从而避免树结构过于复杂，减少过拟合。</p>
+<p><strong>后剪枝（Post-pruning）</strong>：</p>
+<p>在模型训练完成后，通过 <strong>评估树的性能</strong>，删除那些 <strong>贡献较小的分支</strong> 或 <strong>合并不重要的节点</strong>。后剪枝的目标是 <strong>简化决策树结构</strong>，去除掉不必要的分支，使模型更简单，具有更好的泛化能力。</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-11-14<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/Khj1dlSy8oLx5XxAxY4c7mdnnUc" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

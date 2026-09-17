@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="当前背景： 自然语言处理的核心任务之一，是把人类文字变成计算机能“看懂”的数值。早期最朴素的做法是 One-Hot 编码：词表有多大，向量就有多长，每个词独占一维 1，其余全是 0。它简单、易实现，却带来三重麻烦：维度灾难、内存浪费…"><title>一文搞定迁移学习（下）：BERT ，nlp 的语义觉醒之路 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-bm06dbiuiopur4xgq0hcr3d9nnf/"><meta property="og:title" content="一文搞定迁移学习（下）：BERT ，nlp 的语义觉醒之路 · BINGLU"><meta property="og:description" content="当前背景： 自然语言处理的核心任务之一，是把人类文字变成计算机能“看懂”的数值。早期最朴素的做法是 One-Hot 编码：词表有多大，向量就有多长，每个词独占一维 1，其余全是 0。它简单、易实现，却带来三重麻烦：维度灾难、内存浪费…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">大模型与深度学习</div><h1>一文搞定迁移学习（下）：BERT ，nlp 的语义觉醒之路</h1><p class="quiet">胡守谦 · 2025-09-05 · 13 分钟</p><details class="article-toc"><summary>本文目录 · 5 节</summary><nav aria-label="本文目录"><a href="#当前背景" style="padding-left:0px">当前背景：</a><a href="#循环神经网络-rnn链式逐字关联" style="padding-left:28px">循环神经网络 （RNN）：链式逐字关联</a><a href="#长短期记忆网络-lstm-关注重要信息忽略无关信息" style="padding-left:28px">长短期记忆网络 （LSTM）： 关注重要信息，忽略无关信息</a><a href="#总结" style="padding-left:0px">总结：</a><a href="#参考资料httpsarxivorgpdf210506756" style="padding-left:28px">参考资料：https://arxiv.org/pdf/2105.06756</a></nav></details><div class="prose"><h2 id="当前背景">当前背景：</h2>
+<p>自然语言处理的核心任务之一，是把人类文字变成计算机能“看懂”的数值。早期最朴素的做法是 <strong>One-Hot</strong> 编码：词表有多大，向量就有多长，每个词独占一维 1，其余全是 0。它简单、易实现，却带来三重麻烦：维度灾难、内存浪费，且任意两个不同词的向量永远正交，点乘为 0，但他存在一个问题，他没有任何语义理解能力，无法体现“苹果”与“香蕉”比“苹果”与“手机”距离更近这一事实。<strong>Word2Vec</strong> 的出现，就是为了有效缓解这种问题。</p>
+<p><strong>Word2Vector</strong> 通过学习词语的共现关系，将高维稀疏向量压缩为低维稠密向量。</p>
+<p>在训练时，让相似词自己聚拢。它分两版：<strong>CBOW</strong> 用上下文去预测中心词，好比完形填空；<strong>Skip-gram</strong> 反过来，用中心词去猜四周邻居，也就是在训练时，它仅关注这个词在固定的滑动窗口出现的频率（次数），向量点乘越大，词越相关，这样训练完成后，我们就得到一张静态的词向量表，使得语义相近的词（如“苹果”与“香蕉”）在向量空间中彼此更加接近。</p>
+<p>然而，Word2Vec 的核心局限是其“静态性”——一个词只有一个固定向量，他仅能将词语之间的向量拉进，无法动态更新，且没有上下文能力，无法解决一词多义问题。例如，无论一句话中苹果被作为水果还是手机品牌，向量始终不会发生任何变化。为了让模型理解单词的顺序和上下文，研究者们引入了序列模型。</p>
+<h4 id="循环神经网络-rnn链式逐字关联">循环神经网络 （RNN）：链式逐字关联</h4>
+<p><img src="/cbsyy.github.io/media/feishu/DckEb3XGIokGUmxNBUOcPraDnlh.webp" alt="文章配图"></p>
+<p>为了直观理解 RNN，我们可以把它想象成一个有“短期记忆”的阅读者。当他一个词一个词地读句子时，他会努力记住前面看到了什么。</p>
+<p><strong>内部运转流程：</strong></p>
+<ol>
+<li><strong>初始状态：</strong> 在读第一个词（如“我”）之前，阅读者的“记忆”（在模型中称为<strong>隐藏状态</strong>）是空白的。</li>
+<li><strong>第一步：</strong> 他读到“我”，并将这个词的信息编码，然后与他那片空白的记忆结合，形成一个新的、包含了“我”这个信息的记忆。这个新的记忆，就是他对句子到目前为止的理解。</li>
+<li><strong>第二步：</strong> 接着，他读到“爱”。他会把“爱”这个词的信息，和他脑中已经存在的、关于“我”的记忆（即上一步生成的隐藏状态）结合起来。通过一个固定的处理单元，他将两者融合，生成一个更新后的记忆，这个记忆现在同时包含了“我”和“爱”的上下文信息。</li>
+<li><strong>循环往复：</strong> 他继续读“吃”、“苹果”，每读一个新词，都会重复同样的过程：<strong>将当前词的信息与上一时刻的记忆相融合，生成当前时刻的新记忆</strong>。</li>
+</ol>
+<p>这个新记忆会用于两个目的：一是帮助预测下一个词（如果任务是语言模型），二是被传递到下一个时间步，作为处理下一个词的“历史背景”。</p>
+<p>但是这样做有一个很明显的问题，RNN 的本质， 是需要按照时序传输不同时刻的数据逐个计算，简单来说，它需要基于之前的词汇来预测下个词，只能按部就班，这种通过时序延升的方式，当然做不到无限延伸，超过一定数量就无法延升了，就会导致之前的信息丢失（类似上学时玩的传话游戏，从第一个人到最后一个人，随着人数传递的增多，意思就逐渐变味了）。</p>
+<h4 id="长短期记忆网络-lstm-关注重要信息忽略无关信息"><strong>长短期记忆网络 （LSTM）： 关注重要信息，忽略无关信息</strong></h4>
+<p><img src="/cbsyy.github.io/media/feishu/UhhNbgxCDo1oXvxrxwccjOlvndg.webp" alt="文章配图"></p>
+<p><strong>传统 rnn 虽然通过建立各个隐藏层之间的联系，实现了短期记忆的效果，但是只是基于前一时刻，lstm 的灵感和秘诀，来源于记笔记。LSTM</strong> 有一本核心的“<strong>长期笔记本</strong>”（即<strong>细胞状态 Cell State</strong>），还有一套精密的机制来决定什么时候该往笔记本上写东西、什么时候该擦掉旧东西、以及什么时候该看笔记。这套机制，就是他著名的<strong>三个门（Gate）</strong>。</p>
+<p>这三个门就像是笔记本系统中的三个智能管理员，协同工作，精细地控制着信息流。</p>
+<p><strong>内部运转核心——三个门控机制：</strong></p>
+<ol>
+<li>
+<p><strong>遗忘门 （Forget Gate）：决定“扔掉”什么</strong></p>
+<ul>
+<li><strong>作用：</strong> 这是 LSTM 的“清理工”。每当读到一个新词时，遗忘门会首先审视那本“长期笔记本”里的旧信息，并判断：“根据现在这个新情况，过去的哪些记录已经不重要了，可以忘掉了？”</li>
+<li><strong>工作流程：</strong> 它会查看当前输入的新词和上一时刻的简短记忆。例如，句子读到“我姐姐喜欢猫，但<strong>我</strong>更喜欢狗”。当模型读到“我”时，遗忘门可能会判断出句子的主语要变了，于是它会决定降低“姐姐”和“猫”相关信息的权重，相当于在笔记本上把它们轻轻划掉。</li>
+</ul>
+</li>
+<li>
+<p><strong>输入门 （Input Gate）：决定“记下”什么</strong></p>
+<ul>
+<li><strong>作用：</strong> 这是 LSTM 的“记录员”。在决定扔掉一些旧信息后，它需要判断当前这个新词里，有哪些新信息是“值得”被写进长期笔记本的。</li>
+<li><strong>工作流程：</strong> 输入门也看着当前的新词，首先它会提炼出这个词本身包含的候选信息。然后，它会做出一个判断：“这些候选信息中，哪些是重点？应该以多大的强度把它们记下来？” 比如，在“天空乌云密布”这句话里，输入门会认为“乌云密布”是关键信息，值得被重重地写进笔记本，因为它可能预示着“下雨”。</li>
+</ul>
+</li>
+<li>
+<p><strong>输出门 （Output Gate）：决定“输出”什么</strong></p>
+<ul>
+<li><strong>作用：</strong> 这是 LSTM 的“发言人”。它负责根据当前的长期记忆，决定在此时此刻需要对外输出一个怎样的“临时总结”或“当前状态”（即新的隐藏状态）。笔记本里的信息很全，但不一定都要在当前任务中说出来。</li>
+<li><strong>工作流程：</strong> 输出门会审视更新后的“长期笔记本”，然后结合当前输入，判断：“根据我们所有的记忆，现在哪一部分信息对于当下的任务（比如预测下一个词）最有用？” 比如，在处理完“我刚吃了一个又大又红的……”之后，输出门会从长期笔记中提取出与“水果”、“食物”相关的概念，并输出一个强烈的信号，暗示下一个词很可能是“苹果”或“桃子”，而不是“汽车”。</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结 LSTM 的运转流程：</strong></p>
+<p>当 LSTM 处理一个句子时，每个词都会经过这套精密的“记笔记”流程：</p>
+<blockquote>
+<p><strong>遗忘门</strong>先清理旧笔记 → <strong>输入门</strong>再写入新重点 → 这两者共同更新了“长期笔记本”（细胞状态） → 最后，<strong>输出门</strong>根据这本最新的笔记，生成一个当前时刻的“工作摘要”（隐藏状态），这个摘要既用于当前的预测，也作为“短期记忆”参与下一轮的决策。</p>
+</blockquote>
+<p>通过这套“遗忘、输入、输出”的门控机制，LSTM 能够更智能地维护一个长期信息流，有效地缓解了传统 RNN 记不住长序列信息的问题。它知道什么该牢记（如文章的主题），什么该随时忘记（如刚刚结束的从句主语），从而在处理长文本时表现得远比 RNN 更加出色。</p>
+<p>即便如此，LSTM 依旧按时间步一步步推演，记忆带宽固定且有限。RNN 的致命短板正在于此：相隔越远，语义关联越被指数级稀释。人类语言却常把关键线索扔在几十字之外——主语在段首，反倒在段尾才露出否定词；RNN 对此束手无策。LSTM 用遗忘、输入、输出三道门只做“止损”，无法根治。相比之下，BERT 一次性俯瞰整句，自注意力直接为任意两字拉起高速通道，再长的依赖也能一步到齐；在这对“上帝视角”面前，LSTM 的长程捕捉力顿显捉襟见肘。</p>
+<p>为了让词向量真正具备动态的、上下文相关的理解能力，<strong>BERT</strong> 应运而生。它采用强大的 Transformer 编码器 encoder 架构，其核心是自注意力机制（Self-Attention），能一次性捕捉整个句子中所有词语间的相互关系。BERT 通过两个自监督任务进行训练：</p>
+<p><img src="/cbsyy.github.io/media/feishu/ZhAEbSSECo3TrBxjekucTEcknHH.webp" alt="文章配图"></p>
+<ol>
+<li><strong>遮盖语言模型 （MLM）</strong>：随机遮盖句子中的部分词，用符号[MASK]代替，通过预测这部分被遮住的内容，来让模型必须学习语句中各部分的信息涵义，词语间的搭配，从而实现上下文双向预测。</li>
+<li><strong>下一句预测 （NSP）</strong>：判断两个句子是否为原文中的连续句，使模型学会语句之间的逻辑衔接与因果关联，增强这种上下文的感知能力。</li>
+</ol>
+<p>这两个任务共同赋予 BERT“语境函数”的特性：它不再返回固定的查表向量，而是根据输入句子实时计算每个 token 的表示。以“苹果”为例：</p>
+<ul>
+<li>在“我爱吃苹果”中，自注意力层发现“吃”与“苹果”高度相关，逐步将“水果”语义注入“苹果”向量；</li>
+<li>在“苹果手机真好用”中，“手机”对“苹果”的注意力权重最大，使其向量滑向“品牌”聚类空间。</li>
+</ul>
+<p>这一动态调整过程在 BERT 的 12 或 24 层中反复迭代，每一层都对词语表示进行精细化修正，最终输出的向量精准贴合当前语境。因此，无论是多义词、指代消歧，还是复杂句法结构，BERT 都能提供上下文敏感且语义丰富的词表示，在效果上显著超越静态词向量的表达能力。</p>
+<p><strong>回顾这一演进历程，总结三条路线的原理：</strong></p>
+<ul>
+<li><strong>Word2Vec</strong>：通过预测邻近词的浅层任务，解决了<strong>词与词的相似度</strong>问题，让机器认识了同义词。它产出的是一张固定的、可随时查询的词向量表。</li>
+<li>**RNN/LSTM：**在 Word2Vec 之后、BERT 之前，充当“上下文补丁”。LSTM 用三门一状态给句子建立单向/双向的短时记忆，让“主语-谓语”这类局部依赖能被捕捉；可惜仍按时间步串行，记忆维度固定，距离一长照样指数级衰减，一词多义问题仅被缓解而未被解决。</li>
+<li><strong>BERT</strong>：通过基于注意力的深度任务，解决了<strong>词在不同语境下的含义</strong>问题，让机器开始读懂句子。它产出的是一个庞大的预训练模型，需实时计算才能得到动态的、随语境变化的向量。</li>
+</ul>
+<p>简而言之，Word2Vec 让词语不再孤立 → LSTM 给句子加了可增删的“笔记本”却仍是静态词义 → BERT 最终让词义随语境鲜活起来。</p>
+<p><img src="/cbsyy.github.io/media/feishu/IyqbbsFoxoPgEyxVnstcVu7Snvc.webp" alt="文章配图"></p>
+<p>上述讲解过程为模型的<strong>预训练</strong>过程，而接下来则是<strong>微调</strong>阶段，微调随着任务的不同而有所不同。</p>
+<p><strong>场景一：文本分类（如情感分析）</strong></p>
+<ul>
+<li><strong>结构</strong>：在 BERT 模型上加一个简单的<strong>分类层</strong>（通常是一个全连接层）。</li>
+<li><strong>工作方式</strong>：BERT 输入句子前后会添加一个特殊的 <code>[CLS]</code> 和<code>[SEP]</code>符。这个 <code>[CLS]</code> 和<code>[SEP]</code>符是经过 BERT 编码后的输出向量，被认为是代表整个句子语义的“聚合表示”。我们把这个向量喂给顶部的分类层，让它输出“正面”或“负面”的概率。</li>
+</ul>
+<p><strong>场景二：问答系统（如 SQuAD）</strong></p>
+<ul>
+<li><strong>结构</strong>：在 BERT 模型上加两个独立的<strong>指针层</strong>。</li>
+<li><strong>工作方式</strong>：输入是一个“问题”和一个“段落”。BERT 会将它们一起编码。顶部的两个指针层分别用来预测答案在段落中的“起始位置”和“结束位置”。模型学习的就是找到概率最高的起止点。</li>
+</ul>
+<p><strong>场景三：命名实体识别 （NER）</strong></p>
+<ul>
+<li><strong>结构</strong>：在 BERT 模型上为<strong>每个词的输出向量</strong>都接一个<strong>分类层</strong>。</li>
+<li><strong>工作方式</strong>：BERT 对句子中的每个词（Token）都会生成一个向量。我们将每个向量都送入顶部的分类层，来判断这个词属于“人名”、“地名”、“组织名”还是“其他”。</li>
+</ul>
+<p>BERT 是编码器结构底层是多头自注意力机制，这种机制的好处是，消除了字与字之间距离的影响。因为 kqv 计算是向量的点乘，无论距离远近，点乘的计算方法是一样的。</p>
+<p>当然这是 bert 的优点，同时也是缺点，因为，在做 kqv 计算的时候，即使两个字的顺序调换一下，计算的结果也是一样的。为了解决这个问题，BERT 加入了位置编码。这也是所有 transformer 系列模型都要加入位置编码的原因。这样就做到了，BERT 模型既知道文字之间的顺序，又借助 kqv 计算实现了多头注意力的理解。</p>
+<h2 id="总结">总结：</h2>
+<p>BERT 的成功，不仅是模型结构的胜利，更是<strong>迁移学习思想在 NLP 领域的伟大实践</strong>。</p>
+<blockquote>
+<p>它通过 <strong>“大规模通用预训练 + 小规模特定任务微调”</strong> 的范式，将 NLP 模型的训练门槛和成本大大降低，同时将性能提升到了一个全新的高度。</p>
+</blockquote>
+<p>从 BERT 开始，预训练语言模型（PLM）的时代正式来临，它不仅启发了后续一系列更强大的模型（如 GPT 系列、T5 等），也让 AI 在文本分类、智能问答、机器翻译等无数应用场景中发挥出不错的价值。</p>
+<p>可以说，理解了 BERT 和它背后的迁移学习理念，你就掌握了解锁现代 NLP 技术的钥匙。</p>
+<h4 id="参考资料httpsarxivorgpdf210506756">参考资料：<a href="https://arxiv.org/pdf/2105.06756">https://arxiv.org/pdf/2105.06756</a></h4>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-09-05<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/Bm06dbiUiopUr4xGq0Hcr3D9nNf" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

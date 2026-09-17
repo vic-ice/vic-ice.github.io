@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="简单科普一个有监督算法 KNN！ 搬家后的第一课：邻居告诉我的生活智慧 开场：新小区的选择困难症 刚搬到新小区，面对陌生环境，什么都不熟悉： - 哪家超市东西新鲜？ - 哪个菜市场便宜实惠？ - 哪家餐厅值得一试？ - 孩子上哪个兴…"><title>简单科普一个有监督算法 KNN！ · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-lf6jdlha1o86bmxmo6bccjnrnod/"><meta property="og:title" content="简单科普一个有监督算法 KNN！ · BINGLU"><meta property="og:description" content="简单科普一个有监督算法 KNN！ 搬家后的第一课：邻居告诉我的生活智慧 开场：新小区的选择困难症 刚搬到新小区，面对陌生环境，什么都不熟悉： - 哪家超市东西新鲜？ - 哪个菜市场便宜实惠？ - 哪家餐厅值得一试？ - 孩子上哪个兴…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">机器学习</div><h1>简单科普一个有监督算法 KNN！</h1><p class="quiet">胡守谦 · 2025-08-15 · 5 分钟</p><details class="article-toc"><summary>本文目录 · 17 节</summary><nav aria-label="本文目录"><a href="#搬家后的第一课邻居告诉我的生活智慧" style="padding-left:0px">搬家后的第一课：邻居告诉我的生活智慧</a><a href="#开场新小区的选择困难症" style="padding-left:0px">开场：新小区的选择困难症</a><a href="#问邻居大法knn-算法的本质" style="padding-left:0px">问邻居大法：KNN 算法的本质</a><a href="#k-值的选择问几个邻居有门道" style="padding-left:0px">K 值的选择：问几个邻居有门道</a><a href="#k1只问一个邻居" style="padding-left:14px">K=1：只问一个邻居</a><a href="#k太大问遍半个小区" style="padding-left:14px">K=太大：问遍半个小区</a><a href="#刚刚好通常选奇数" style="padding-left:14px">刚刚好：通常选奇数</a><a href="#距离的计算谁是最近的邻居" style="padding-left:0px">距离的计算：谁是“最近的邻居”</a><a href="#欧氏距离直线距离" style="padding-left:14px">欧氏距离：直线距离</a><a href="#曼哈顿距离走街区的距离" style="padding-left:14px">曼哈顿距离：走街区的距离</a><a href="#生活中的-knn-应用" style="padding-left:0px">生活中的 KNN 应用</a><a href="#但是等等这不是物以类聚吗为什么他不是无监督呢" style="padding-left:0px">但是等等！这不是“物以类聚”吗？为什么他不是无监督呢？</a><a href="#knn有经验可借鉴监督学习" style="padding-left:14px">KNN：有经验可借鉴（监督学习）</a><a href="#聚类没经验自己摸索无监督学习" style="padding-left:14px">聚类：没经验自己摸索（无监督学习）</a><a href="#knn-的致命缺点效率问题" style="padding-left:0px">KNN 的致命缺点：效率问题</a><a href="#深层智慧局部经验最宝贵" style="padding-left:0px">深层智慧：局部经验最宝贵</a><a href="#结语算法源于生活" style="padding-left:0px">结语：算法源于生活</a></nav></details><div class="prose"><title>简单科普一个有监督算法 KNN！</title>
+<h1 id="搬家后的第一课邻居告诉我的生活智慧">搬家后的第一课：邻居告诉我的生活智慧</h1>
+<h2 id="开场新小区的选择困难症">开场：新小区的选择困难症</h2>
+<p>刚搬到新小区，面对陌生环境，什么都不熟悉：</p>
+<ul>
+<li>哪家超市东西新鲜？</li>
+<li>哪个菜市场便宜实惠？</li>
+<li>哪家餐厅值得一试？</li>
+<li>孩子上哪个兴趣班好？</li>
+</ul>
+<p>这时候，最<strong>聪明</strong>的办法就是——<strong>问邻居！</strong></p>
+<h2 id="问邻居大法knn-算法的本质">问邻居大法：KNN 算法的本质</h2>
+<p><strong>KNN（K-Nearest Neighbors）就是数据世界里的“问邻居大法”。</strong></p>
+<p>遇到新情况不知道怎么判断时，找最相似的几个“邻居”，看看他们的选择：</p>
+<ul>
+<li>想知道新餐厅好不好？问问最近的 3 个邻居（K=3）</li>
+<li>如果 3 个人都说好，那多半不会错</li>
+<li>如果 3 个人都摇头，那还是算了吧</li>
+</ul>
+<p><strong>为什么这招管用？</strong></p>
+<p>因为生活中有个朴素真理：<strong>相似的人往往有相似的选择</strong>。住得近、条件相仿的邻居，他们的判断通常对你也适用。</p>
+<h2 id="k-值的选择问几个邻居有门道">K 值的选择：问几个邻居有门道</h2>
+<h3 id="k1只问一个邻居">K=1：只问一个邻居</h3>
+<p>就像只听一个人意见，风险很大：</p>
+<ul>
+<li><strong>优点</strong>：简单快速</li>
+<li><strong>缺点</strong>：万一这人品味奇特怎么办？</li>
+</ul>
+<p><strong>例子：</strong> 只问楼下大爷哪家餐厅好，结果他只爱吃麻辣烫，你跟着去了才发现不合胃口。</p>
+<h3 id="k太大问遍半个小区">K=太大：问遍半个小区</h3>
+<p>问了 100 个邻居，连隔了十条街的人意见都算上：</p>
+<ul>
+<li><strong>优点</strong>：意见全面</li>
+<li><strong>缺点</strong>：太远的人情况和你差太多，参考价值不大</li>
+</ul>
+<p><strong>例子：</strong> 为了选幼儿园问了整个小区，连没孩子的单身邻居意见都听了。</p>
+<h3 id="刚刚好通常选奇数">刚刚好：通常选奇数</h3>
+<p>一般问 3 个、5 个、7 个最近的邻居，既避免了个例影响，又不会被不相关的意见干扰。</p>
+<h2 id="距离的计算谁是最近的邻居">距离的计算：谁是“最近的邻居”</h2>
+<h3 id="欧氏距离直线距离">欧氏距离：直线距离</h3>
+<p>就像用尺子量两点间的直线距离，适合连续的特征比较。</p>
+<p><strong>例子：</strong> 比较房价、面积、楼层等数值特征。</p>
+<h3 id="曼哈顿距离走街区的距离">曼哈顿距离：走街区的距离</h3>
+<p>只能横着竖着走，像出租车在城市里绕行，适合分类特征。</p>
+<p><strong>例子：</strong> 比较户型（三室/两室）、朝向（南向/北向）等。</p>
+<h2 id="生活中的-knn-应用">生活中的 KNN 应用</h2>
+<ol>
+<li>选餐厅</li>
+</ol>
+<p>根据你的口味偏好，找到品味相似的 3 个邻居，看他们推荐什么餐厅。</p>
+<ol>
+<li>买房决策</li>
+</ol>
+<p>看看和你收入、家庭情况相似的邻居都选了什么样的房子。</p>
+<ol>
+<li>孩子教育</li>
+</ol>
+<p>找几个孩子年龄、性格相似的家长，看他们给孩子报了什么兴趣班。</p>
+<ol>
+<li>购物推荐</li>
+</ol>
+<p>淘宝、京东根据你的购买记录，找到购物习惯相似的用户，推荐他们买过的商品。</p>
+<h2 id="但是等等这不是物以类聚吗为什么他不是无监督呢">但是等等！这不是“物以类聚”吗？为什么他不是无监督呢？</h2>
+<p><strong>很多人会问：KNN 和聚类不都是“物以类聚，人以群分”吗？</strong></p>
+<p>虽然听起来相似，但完全是两回事：</p>
+<h3 id="knn有经验可借鉴监督学习">KNN：有经验可借鉴（监督学习）</h3>
+<ul>
+<li><strong>已有答案</strong>：邻居们都用过这些服务，有明确评价</li>
+<li><strong>问邻居要建议</strong>：新来的你问“这家餐厅怎么样？”</li>
+<li><strong>就像</strong>：搬家后问有经验的邻居推荐</li>
+</ul>
+<h3 id="聚类没经验自己摸索无监督学习">聚类：没经验自己摸索（无监督学习）</h3>
+<ul>
+<li><strong>没有答案</strong>：一堆人混在一起，不知道谁和谁是一类</li>
+<li><strong>自己找规律</strong>：观察谁和谁走得近，自然分成几个圈子</li>
+<li><strong>就像</strong>：新小区刚入住，大家都不熟，慢慢形成各种邻里圈子</li>
+</ul>
+<p><strong>关键区别：</strong></p>
+<ul>
+<li>KNN：<strong>有标准答案照着学</strong> —— 问有经验的人</li>
+<li>聚类：<strong>没答案自己探索</strong> —— 观察自然形成的群体</li>
+</ul>
+<h2 id="knn-的致命缺点效率问题">KNN 的致命缺点：效率问题</h2>
+<p><strong>KNN 是个“临时抱佛脚”的懒算法：</strong></p>
+<ul>
+<li><strong>平时</strong>：什么准备工作都不做，就把所有邻居信息存着</li>
+<li><strong>需要时</strong>：现场问遍所有人，一个个计算相似度</li>
+<li><strong>结果</strong>：邻居越多问得越久，效率越来越低</li>
+</ul>
+<p>就像每次选餐厅都要挨家挨户问一遍，而不是平时就整理个“靠谱邻居推荐清单”。</p>
+<h2 id="深层智慧局部经验最宝贵">深层智慧：局部经验最宝贵</h2>
+<p><strong>KNN 揭示的生活哲理：</strong></p>
+<p>面对新选择时，与其翻遍所有攻略，不如问问情况最相似的几个人。</p>
+<p>这就像：</p>
+<ul>
+<li>找工作问同专业的师兄师姐</li>
+<li>买车问收入相当的朋友</li>
+<li>选学校问同龄孩子的家长</li>
+</ul>
+<p><strong>因为：最相似的经验最有参考价值！</strong></p>
+<h2 id="结语算法源于生活">结语：算法源于生活</h2>
+<p>KNN 算法听起来高大上，实际上就是我们日常生活中“问邻居”的智慧。</p>
+<p>它告诉我们：<strong>有时候，最简单的方法往往最有效</strong>。</p>
+<p>在这个信息爆炸的时代，与其被海量信息淹没，不如找几个“靠谱邻居”，听听他们的建议，<em>在人生的每个新阶段，总有相似经历的“邻居”可以给你</em>_**指路****。_</p>
+<hr>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-08-15<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/Lf6JdLHa1o86BMxmO6BcCjnrnod" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

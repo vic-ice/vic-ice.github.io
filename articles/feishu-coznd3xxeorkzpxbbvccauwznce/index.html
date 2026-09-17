@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（LLM），你们的沟通方式（Prompt），他能联系的各种服务商（Fu…"><title>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-coznd3xxeorkzpxbbvccauwznce/"><meta property="og:title" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 · BINGLU"><meta property="og:description" content="一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别 想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（LLM），你们的沟通方式（Prompt），他能联系的各种服务商（Fu…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">Agent 与 RAG</div><h1>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别</h1><p class="quiet">胡守谦 · 2025-05-23 · 6 分钟</p><details class="article-toc"><summary>本文目录 · 11 节</summary><nav aria-label="本文目录"><a href="#1-llm大语言模型专业的旅行顾问" style="padding-left:14px">1. LLM（大语言模型）：专业的“旅行顾问”</a><a href="#2-prompt与旅行顾问沟通的艺术" style="padding-left:14px">2. Prompt：与旅行顾问沟通的“艺术”</a><a href="#system-prompt系统提示词" style="padding-left:28px">System Prompt（系统提示词）</a><a href="#user-prompt用户提示词" style="padding-left:28px">User Prompt（用户提示词）</a><a href="#实际应用场景" style="padding-left:14px">实际应用场景</a><a href="#agent-的核心能力" style="padding-left:14px">Agent 的核心能力：</a><a href="#没有-mcp-之前的混乱" style="padding-left:14px">没有 MCP 之前的混乱</a><a href="#mcp-带来的统一" style="padding-left:14px">MCP 带来的统一</a><a href="#完整工作流程" style="padding-left:0px">完整工作流程</a><a href="#常见误区澄清" style="padding-left:14px">常见误区澄清</a><a href="#总结" style="padding-left:14px">总结</a></nav></details><div class="prose"><title>一文讲清楚 Prompt、MCP、Function Call、Agent 和 LLM 之间的关系和区别</title>
+<blockquote>
+<p>想象一下，你要计划一次完美的旅行，这里有一位专业的旅行顾问（<strong>LLM</strong>），你们的沟通方式（<strong>Prompt</strong>），他能联系的各种服务商（<strong>Function Call</strong>），整个旅行社的智能规划系统（<strong>Agent</strong>），以及所有服务商的统一预订标准（<strong>MCP</strong>）。让我们通过这个旅行场景，一步步理解这些概念。</p>
+</blockquote>
+<h3 id="1-llm大语言模型专业的旅行顾问"><strong>1. LLM（大语言模型）：专业的“旅行顾问”</strong></h3>
+<p>LLM 就像那位经验丰富的旅行顾问，他了解世界各地的风土人情，能理解你的需求并给出建议。但他的信息有<strong>局限性</strong>——比如不知道今天的机票价格，也不清楚酒店的实时房态。</p>
+<h3 id="2-prompt与旅行顾问沟通的艺术"><strong>2. Prompt：与旅行顾问沟通的“艺术”</strong></h3>
+<h4 id="system-prompt系统提示词">System Prompt（系统提示词）</h4>
+<p>就像旅行社给顾问的工作指南，规定了<strong>服务标准</strong>和<strong>风格</strong>。</p>
+<p><strong>具体示例：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>System Prompt:</span></span>
+<span class="line"><span>你是一位专业的旅行规划顾问，名叫小游。你需要：</span></span>
+<span class="line"><span>1. 根据客户预算合理规划</span></span>
+<span class="line"><span>2. 考虑天气和季节因素</span></span>
+<span class="line"><span>3. 提供详细的行程安排</span></span>
+<span class="line"><span>4. 推荐性价比高的选择</span></span></code></pre>
+<h4 id="user-prompt用户提示词">User Prompt（用户提示词）</h4>
+<p>就是你向旅行顾问提出的<strong>需求</strong>。</p>
+<p><strong>具体示例：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>User: 我想下周去杭州玩3天，预算5000元，有什么建议？</span></span></code></pre>
+<h3 id="实际应用场景"><strong>实际应用场景</strong></h3>
+<p><strong>场景 1：商务风格</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>System Prompt: 你是专注商务出行的顾问，注重效率和便利</span></span>
+<span class="line"><span>User: 去杭州出差3天</span></span>
+<span class="line"><span>AI回复: 建议入住西湖商圈希尔顿酒店，距离商务区15分钟。</span></span>
+<span class="line"><span>        推荐航班：MU5511 早7:30抵达，充足时间准备会议。</span></span>
+<span class="line"><span>        会议间隙可参观西湖，单程仅需10分钟。</span></span></code></pre>
+<p><strong>场景 2：休闲风格</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>System Prompt: 你是轻松友好的旅游顾问，注重体验和乐趣</span></span>
+<span class="line"><span>User: 去杭州出差3天</span></span>
+<span class="line"><span>AI回复: 哇，杭州出差真不错！建议住在西湖附近的民宿，</span></span>
+<span class="line"><span>        晚上散步超惬意～白天忙完工作，傍晚一定要去</span></span>
+<span class="line"><span>        看看雷峰塔的日落，超美的！</span></span></code></pre>
+<ol>
+<li>Function Call：调用外部能力的“电话”</li>
+</ol>
+<p>旅行顾问虽然经验丰富，但他需要<strong>联系</strong>航空公司、酒店、景点等查询实时信息。Function Call 就是这个”<strong>联系</strong>“的过程。</p>
+<p><strong>工作流程示例：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>游客：帮我查一下明天北京到杭州的航班</span></span>
+<span class="line"><span>↓</span></span>
+<span class="line"><span>顾问思考：我需要查询航班信息</span></span>
+<span class="line"><span>↓</span></span>
+<span class="line"><span>Function Call: searchFlights(from="北京", to="杭州", date="明天")</span></span>
+<span class="line"><span>↓</span></span>
+<span class="line"><span>航空系统返回：[航班列表数据]</span></span>
+<span class="line"><span>↓</span></span>
+<span class="line"><span>顾问整理信息：明天有以下航班供您选择...</span></span></code></pre>
+<ol>
+<li>Agent：<strong>自主</strong>工作的“系统”</li>
+</ol>
+<p>Agent 不仅仅是工具，而是整个旅行社的智能规划系统。如果说 LLM 是旅行顾问，那 Agent 就是能够<strong>自主协调</strong>整个行程的高级管家——它知道先订哪个、如何避免冲突、怎样优化路线。</p>
+<p><strong>Agent vs 工具的区别：</strong></p>
+<ul>
+<li><strong>工具</strong>：计算器（输入数字，返回结果）</li>
+<li><strong>Agent</strong>：数学老师（理解你的问题，选择合适方法，一步步教你解题）</li>
+</ul>
+<h3 id="agent-的核心能力"><strong>Agent 的核心能力：</strong></h3>
+<ul>
+<li><strong>行程分解</strong>：将“3 天杭州游”分解为交通、住宿、景点、餐饮等模块</li>
+<li><strong>时间管理</strong>：确保航班时间与酒店入住时间衔接</li>
+<li><strong>冲突处理</strong>：发现景点周一闭馆，自动调整行程</li>
+<li><strong>优化建议</strong>：根据天气调整室内外活动比例</li>
+</ul>
+<ol>
+<li>MCP（Model Context Protocol）：统一的“服务标准”</li>
+</ol>
+<p>MCP 就像是外出旅行的<strong>标准化</strong>手册。</p>
+<h3 id="没有-mcp-之前的混乱">没有 MCP 之前的混乱</h3>
+<p>想象你的 AI 助手要调用不同的工具，每个工具都有<strong>完全不同</strong>的接入方式：</p>
+<p><strong>调用天气工具：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 工具A：需要先初始化，再调用</span></span>
+<span class="line"><span style="color:#E1E4E8">weather_client </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> WeatherAPI(</span><span style="color:#FFAB70">api_key</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"xxx"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">result </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> weather_client.get_weather(</span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#F97583">if</span><span style="color:#E1E4E8"> result.status </span><span style="color:#F97583">==</span><span style="color:#79B8FF"> 200</span><span style="color:#E1E4E8">:</span></span>
+<span class="line"><span style="color:#E1E4E8">    temp </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> result.data[</span><span style="color:#9ECBFF">"temperature"</span><span style="color:#E1E4E8">]</span></span></code></pre>
+<p><strong>调用航班工具：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 工具B：直接HTTP请求，自己处理JSON</span></span>
+<span class="line"><span style="color:#E1E4E8">response </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> requests.post(</span><span style="color:#9ECBFF">"https://flight-api.com/search"</span><span style="color:#E1E4E8">,</span></span>
+<span class="line"><span style="color:#FFAB70">                       headers</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"Authorization"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"Bearer yyy"</span><span style="color:#E1E4E8">},</span></span>
+<span class="line"><span style="color:#FFAB70">                       json</span><span style="color:#F97583">=</span><span style="color:#E1E4E8">{</span><span style="color:#9ECBFF">"from"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"北京"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"to"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">flights </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> json.loads(response.text)[</span><span style="color:#9ECBFF">"flights"</span><span style="color:#E1E4E8">]</span></span></code></pre>
+<p><strong>调用酒店工具：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 工具C：使用SOAP协议，返回XML</span></span>
+<span class="line"><span style="color:#E1E4E8">soap_client </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> HotelSOAPService(</span><span style="color:#FFAB70">wsdl</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"https://hotel.com/service?wsdl"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">xml_result </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> soap_client.searchHotels(</span><span style="color:#FFAB70">city</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">, </span><span style="color:#FFAB70">date</span><span style="color:#F97583">=</span><span style="color:#9ECBFF">"2024-12-28"</span><span style="color:#E1E4E8">)</span></span>
+<span class="line"><span style="color:#E1E4E8">hotels </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> parse_xml(xml_result)</span></span></code></pre>
+<p><strong>调用地图工具：</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 工具D：使用GraphQL</span></span>
+<span class="line"><span style="color:#E1E4E8">query </span><span style="color:#F97583">=</span><span style="color:#9ECBFF"> """</span></span>
+<span class="line"><span style="color:#9ECBFF">query GetRoute($from: String!, $to: String!) {</span></span>
+<span class="line"><span style="color:#9ECBFF">    route(from: $from, to: $to) {</span></span>
+<span class="line"><span style="color:#9ECBFF">        distance</span></span>
+<span class="line"><span style="color:#9ECBFF">        duration</span></span>
+<span class="line"><span style="color:#9ECBFF">    }</span></span>
+<span class="line"><span style="color:#9ECBFF">}</span></span>
+<span class="line"><span style="color:#9ECBFF">"""</span></span>
+<span class="line"><span style="color:#E1E4E8">result </span><span style="color:#F97583">=</span><span style="color:#E1E4E8"> graphql_client.execute(query, {</span><span style="color:#9ECBFF">"from"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"西湖"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"to"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"灵隐寺"</span><span style="color:#E1E4E8">})</span></span></code></pre>
+<p><strong>这种混乱导致：</strong></p>
+<ul>
+<li>LLM 需要“学会”每个工具的<strong>特殊</strong>调用方式</li>
+<li>每接入一个新工具，都要写特殊的适配代码</li>
+<li>错误处理方式各不相同，难以<strong>统一</strong>管理</li>
+<li>有的要 API 密钥，有的要 OAuth，有的要证书…</li>
+</ul>
+<p>就像你要打电话，但是：</p>
+<ul>
+<li>给 A 公司要用座机</li>
+<li>给 B 公司要发传真</li>
+<li>给 C 公司要用对讲机</li>
+<li>给 D 公司要写信</li>
+</ul>
+<p>这样 AI 助手怎么高效工作？</p>
+<h3 id="mcp-带来的统一">MCP 带来的统一</h3>
+<p>有了 MCP，所有工具调用都遵循<strong>统一</strong>标准：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="python"><code><span class="line"><span style="color:#6A737D"># 所有服务都用统一格式</span></span>
+<span class="line"><span style="color:#E1E4E8">mcp.call(</span><span style="color:#9ECBFF">"flight"</span><span style="color:#E1E4E8">, {</span><span style="color:#9ECBFF">"from"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"北京"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"to"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"date"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"2024-12-28"</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">mcp.call(</span><span style="color:#9ECBFF">"hotel"</span><span style="color:#E1E4E8">, {</span><span style="color:#9ECBFF">"city"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"checkin"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"2024-12-28"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"nights"</span><span style="color:#E1E4E8">: </span><span style="color:#79B8FF">3</span><span style="color:#E1E4E8">})</span></span>
+<span class="line"><span style="color:#E1E4E8">mcp.call(</span><span style="color:#9ECBFF">"attraction"</span><span style="color:#E1E4E8">, {</span><span style="color:#9ECBFF">"city"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"杭州"</span><span style="color:#E1E4E8">, </span><span style="color:#9ECBFF">"type"</span><span style="color:#E1E4E8">: </span><span style="color:#9ECBFF">"必游景点"</span><span style="color:#E1E4E8">})</span></span></code></pre>
+<h2 id="完整工作流程">完整工作流程</h2>
+<p>了解了各个概念后，让我们通过一张架构图来看看它们是如何协同工作的：</p>
+<p><img src="/cbsyy.github.io/media/feishu/E3RfbSECFoE5xxxCyabcvvqBnqc.webp" alt="文章配图"></p>
+<p>这里理解意图部分并不是所有任务都需要 <strong>Agent</strong> 参与。LLM 会根据任务复杂度<strong>智能判断</strong>，可根据任务复杂度决定是否调用 <strong>Agent</strong> 参与任务执行。</p>
+<p><strong>简单任务</strong>（直接处理）：LLM <strong>理解</strong>用户需求后，如果需要外部信息（如查实时航班），它会直接<strong>决策</strong>并利用 Function Call 机制（遵循 MCP）<strong>调用</strong>相应工具，然后<strong>整合</strong>信息直接<strong>回复</strong>。这里的 LLM 行为本身已经具备了基础的 Agent 特征（<strong>决策、工具调用</strong>）。</p>
+<p><strong>复杂任务</strong>（Agent 介入）：当 LLM 判断任务需要多步骤规划、多工具协调、状态管理、冲突解决等高级功能时，它会启动或将其交给一个更完备的“<strong>Agent</strong> 系统/流程”。这个 <strong>Agent</strong> 系统依然以 LLM 为核心进行推理，但会进行更复杂的任务分解、工具序列调用、记忆管理等。</p>
+<p><img src="/cbsyy.github.io/media/feishu/LcVwbz5WRooCNOx8z8EchyYbnte.webp" alt="文章配图"></p>
+<p>让我们通过一个完整例子串联所有概念：</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>场景：用户想规划杭州3日游</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>1. System Prompt设定身份</span></span>
+<span class="line"><span>   "你是专业的旅行规划顾问，擅长设计个性化行程..."</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>2. User输入需求</span></span>
+<span class="line"><span>   "下周去杭州玩3天，预算5000元，喜欢人文景点"</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>3. LLM理解意图</span></span>
+<span class="line"><span>   需要：查天气 → 订交通 → 订酒店 → 规划景点 → 推荐美食</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>4. Agent介入协调</span></span>
+<span class="line"><span>   - 先查天气，确定适合出行</span></span>
+<span class="line"><span>   - 根据预算分配交通住宿比例</span></span>
+<span class="line"><span>   - 查询景点，优先人文类</span></span>
+<span class="line"><span>   - 检查时间冲突，优化路线</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>5. 通过Function Call调用各服务</span></span>
+<span class="line"><span>   - 天气查询API（通过MCP）</span></span>
+<span class="line"><span>   - 机票/高铁查询API（通过MCP）</span></span>
+<span class="line"><span>   - 酒店预订API（通过MCP）</span></span>
+<span class="line"><span>   - 景点信息API（通过MCP）</span></span>
+<span class="line"><span>   - 餐厅推荐API（通过MCP）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>6. LLM整合信息，生成完整行程</span></span>
+<span class="line"><span>   "您的杭州3日文化之旅：</span></span>
+<span class="line"><span>    Day1: 抵达→灵隐寺→飞来峰（禅文化）</span></span>
+<span class="line"><span>    Day2: 中国茶叶博物馆→西湖→雷峰塔（茶文化+历史）</span></span>
+<span class="line"><span>    Day3: 宋城→南宋御街（宋文化）</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>    交通：高铁往返 ¥600</span></span>
+<span class="line"><span>    住宿：西湖边精品酒店 ¥1200</span></span>
+<span class="line"><span>    门票+餐饮：¥2000</span></span>
+<span class="line"><span>    预留机动资金：¥1200"</span></span></code></pre>
+<h3 id="常见误区澄清">常见误区澄清</h3>
+<p>❌ **误区 1**：Agent 就是工具的集合</p>
+<p>✅ **正确**：Agent 是能自主规划和决策的系统</p>
+<p>❌ **误区 2**：每次对话都需要 Function Call</p>
+<p>✅ **正确**：LLM 有知识储备时直接回答，只在需要实时信息时调用</p>
+<p>❌ **误区 3**：MCP 让所有工具功能一样</p>
+<p>✅ **正确**：MCP 只统一调用方式，使接口兼容，工具功能各不相同</p>
+<h3 id="总结">总结</h3>
+<ul>
+<li>**LLM（旅行顾问）：**核心大脑，拥有丰富的旅行知识</li>
+<li><strong>Prompt（沟通方式）：System Prompt 是服务标准</strong>，<strong>User Prompt 是客户需求</strong></li>
+<li>**Function Call（服务专线）：**LLM 调用外部工具的机制，顾问（<strong>llm</strong>）联系各个服务商（<strong>tool</strong>）的方式</li>
+<li>**Agent（行程规划系统）：**基于 LLM 的自主系统，能规划和执行复杂任务，协调复杂行程，确保完美体验</li>
+<li><strong>MCP</strong>：让所有服务商（<strong>tool</strong>）说同一种“语言”的统一标准，标准化确保了工具的稳定性和可维护性，确保兼容</li>
+</ul>
+<p>这就像一家专业的旅行社：经验丰富的旅行顾问（<strong>LLM</strong>）按照服务标准（<strong>System Prompt</strong>）工作，理解客户需求（<strong>User Prompt</strong>），必要时联系各个服务商（<strong>Function Call</strong>），整个行程规划系统（<strong>Agent</strong>）智能协调，而所有合作方都遵循统一预订标准（<strong>MCP</strong>）——最终为客户打造完美的旅行体验！</p>
+<p>如有任何问题，欢迎评论区留言讨论！！！</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-05-23<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/CoZnd3XXEorKzpxbBVccaUWZnCe" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>

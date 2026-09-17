@@ -1,0 +1,245 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="什么是 A2A？ A2A，即 Agent-to-Agent，是一种多智能体协作架构。从字面意思看，A2A 就是多 Agent 协作，但这里存在一个重要的理解误区：多 Agent 并不代表各个 Agent 之间直接相互协作，而是需要通…"><title>A2A （Agent-to-Agent） 协议 · BINGLU</title><link rel="canonical" href="https://vic-ice.github.io/cbsyy.github.io/articles/feishu-mam8dc4i6owzsfxko40caf6knhd/"><meta property="og:title" content="A2A （Agent-to-Agent） 协议 · BINGLU"><meta property="og:description" content="什么是 A2A？ A2A，即 Agent-to-Agent，是一种多智能体协作架构。从字面意思看，A2A 就是多 Agent 协作，但这里存在一个重要的理解误区：多 Agent 并不代表各个 Agent 之间直接相互协作，而是需要通…"><meta property="og:type" content="website"><link rel="alternate" type="application/rss+xml" title="BINGLU 文章订阅" href="/cbsyy.github.io/atom.xml"><link rel="icon" type="image/svg+xml" href="/cbsyy.github.io/favicon.svg"><link rel="stylesheet" href="/cbsyy.github.io/_astro/Base.D-mbcLBD.css"></head><body><a class="skip" href="#main">跳到正文</a><div class="shell"><header class="header"><a class="brand" href="/cbsyy.github.io/">BINGLU<span> / 博客</span></a><nav aria-label="主导航"><a href="/cbsyy.github.io/" aria-current="page">文章</a><a href="/cbsyy.github.io/map/">文章地图</a><a href="/cbsyy.github.io/shelf/">书架</a><a href="/cbsyy.github.io/about/">关于</a><button id="open-search" aria-label="搜索文章和书籍"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle><path d="m15 15 6 6"></path></svg><span>搜索</span></button></nav></header><main id="main"><article class="reader"><a id="article-back" class="back" href="/cbsyy.github.io/">← 返回文章</a><div class="eyebrow">Agent 与 RAG</div><h1>A2A （Agent-to-Agent） 协议</h1><p class="quiet">胡守谦 · 2025-05-29 · 8 分钟</p><details class="article-toc"><summary>本文目录 · 25 节</summary><nav aria-label="本文目录"><a href="#什么是-a2a" style="padding-left:0px">什么是 A2A？</a><a href="#a2a-与-mcp-的关系" style="padding-left:0px">A2A 与 MCP 的关系</a><a href="#大模型如何通过-a2a-和-mcp-完成任务" style="padding-left:0px">大模型如何通过 A2A 和 MCP 完成任务</a><a href="#三者关系图" style="padding-left:14px">三者关系图</a><a href="#关键角色说明" style="padding-left:14px">关键角色说明</a><a href="#大模型如何知道调用谁" style="padding-left:14px">大模型如何知道调用谁？</a><a href="#协作流程4-步骤" style="padding-left:14px">协作流程（4 步骤）</a><a href="#一句话总结" style="padding-left:14px">一句话总结</a><a href="#为什么这样设计" style="padding-left:14px">为什么这样设计？</a><a href="#a2a-的多种协作模式" style="padding-left:0px">A2A 的多种协作模式</a><a href="#一总指挥模式中心化协调" style="padding-left:28px">一、总指挥模式（中心化协调）</a><a href="#二对等协作模式p2p-模式" style="padding-left:28px">二、对等协作模式（P2P 模式）</a><a href="#三流水线模式pipeline-模式" style="padding-left:28px">三、流水线模式（Pipeline 模式）</a><a href="#四分层模式hierarchical-模式" style="padding-left:28px">四、分层模式（Hierarchical 模式）</a><a href="#五市场竞标模式auction-模式" style="padding-left:28px">五、市场竞标模式（Auction 模式）</a><a href="#六蜂群模式swarm-模式" style="padding-left:28px">六、蜂群模式（Swarm 模式）</a><a href="#七联邦模式federation-模式" style="padding-left:28px">七、联邦模式（Federation 模式）</a><a href="#八事件驱动模式event-driven-模式" style="padding-left:28px">八、事件驱动模式（Event-Driven 模式）</a><a href="#a2a-相比传统-agent-的优势" style="padding-left:0px">A2A 相比传统 Agent 的优势</a><a href="#传统-agent-系统的问题" style="padding-left:14px">传统 Agent 系统的问题：</a><a href="#a2a-系统的优势" style="padding-left:14px">A2A 系统的优势：</a><a href="#混合协作模式" style="padding-left:14px">混合协作模式</a><a href="#技术实现要点" style="padding-left:14px">技术实现要点</a><a href="#应用场景" style="padding-left:14px">应用场景</a><a href="#总结" style="padding-left:0px">总结</a></nav></details><div class="prose"><h2 id="什么是-a2a">什么是 A2A？</h2>
+<p>A2A，即 Agent-to-Agent，是一种多智能体协作架构。从字面意思看，A2A 就是多 Agent 协作，但这里存在一个重要的理解误区：多 Agent 并不代表各个 Agent 之间直接相互协作，而是需要通过特定的协作模式来实现有序的任务执行。</p>
+<p>A2A 就像互联网的 HTTP 协议一样，HTTP 让不同的网站能够互相访问和交流，而 A2A 则让不同的 AI 智能体能够互相协作，共同完成更复杂的任务。</p>
+<h2 id="a2a-与-mcp-的关系">A2A 与 MCP 的关系</h2>
+<p>A2A 和 MCP（Model Context Protocol）是两个互补的概念：</p>
+<ul>
+<li><strong>MCP</strong>：专注于定义 AI 模型如何使用工具，关注的是工具的使用层面</li>
+<li><strong>A2A</strong>：专注于智能体之间的协作，关注的是 Agent 间的交互层面</li>
+</ul>
+<p>二者是互补关系，MCP 解决“如何使用工具”的问题，A2A 解决“如何协作”的问题。</p>
+<h2 id="大模型如何通过-a2a-和-mcp-完成任务">大模型如何通过 A2A 和 MCP 完成任务</h2>
+<h3 id="三者关系图">三者关系图</h3>
+<p><img src="/cbsyy.github.io/media/feishu/MEbsbyPh6oa1duxyLgIcgeIdnog.webp" alt="文章配图"></p>
+<h3 id="关键角色说明">关键角色说明</h3>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>作用</th>
+<th>类比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>大模型</td>
+<td>发起方，发送A2A请求</td>
+<td>顾客点餐</td>
+</tr>
+<tr>
+<td>A2A服务器</td>
+<td>协议解析器和任务分发器</td>
+<td>餐厅服务员</td>
+</tr>
+<tr>
+<td>Agent</td>
+<td>任务执行者</td>
+<td>厨师</td>
+</tr>
+<tr>
+<td>MCP工具</td>
+<td>具体工具</td>
+<td>厨具</td>
+</tr>
+</tbody>
+</table>
+<h3 id="大模型如何知道调用谁">大模型如何知道调用谁？</h3>
+<p><strong>方式 1：能力注册表</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>A2A服务器维护一个Agent能力表：</span></span>
+<span class="line"><span>{</span></span>
+<span class="line"><span>  "data_analysis": ["trend_analysis", "statistical_analysis"],</span></span>
+<span class="line"><span>  "image_generation": ["create_chart", "edit_image"],</span></span>
+<span class="line"><span>  "text_processing": ["summarize", "translate"]</span></span>
+<span class="line"><span>}</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>大模型查询：我需要数据分析 → 调用data_analysis类型的Agent</span></span></code></pre>
+<p><strong>方式 2：动态发现</strong></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>大模型：GET /a2a/agents?capability=data_analysis</span></span>
+<span class="line"><span>A2A服务器返回：可用的数据分析Agent列表</span></span></code></pre>
+<h3 id="协作流程4-步骤">协作流程（4 步骤）</h3>
+<p><strong>例子：用户要求“分析销售数据并生成报告”</strong></p>
+<p><img src="/cbsyy.github.io/media/feishu/ET8VbWeZ1o3QDcx2sbtcvbc6n2d.webp" alt="文章配图"></p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="text"><code><span class="line"><span>步骤1: 大模型理解任务</span></span>
+<span class="line"><span>用户："帮我分析销售数据并生成报告"</span></span>
+<span class="line"><span>大模型：需要数据分析 + 报告生成，先分析后生成</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤2: A2A调用Agent</span></span>
+<span class="line"><span>大模型 --A2A--&gt; 数据分析Agent："分析sales.csv文件"</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤3: MCP调用工具</span></span>
+<span class="line"><span>数据分析Agent --MCP--&gt; 文件工具："读取sales.csv"</span></span>
+<span class="line"><span>数据分析Agent --MCP--&gt; 分析工具："计算趋势"</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>步骤4: 结果返回整合</span></span>
+<span class="line"><span>工具 --结果--&gt; Agent --A2A--&gt; 大模型 --&gt; 用户</span></span></code></pre>
+<h3 id="一句话总结">一句话总结</h3>
+<ul>
+<li><strong>大模型</strong>：项目经理，理解需求、分配任务、整合结果</li>
+<li><strong>A2A</strong>：内部通讯系统，让大模型能调用各种专业 Agent</li>
+<li><strong>MCP</strong>：工具箱接口，让 Agent 能使用各种具体工具</li>
+</ul>
+<h3 id="为什么这样设计">为什么这样设计？</h3>
+<p>传统方式：大模型需要学会所有技能（像一个人做所有工作） 新方式：大模型协调专业团队（像项目经理带领专家团队）</p>
+<p><strong>优势：</strong></p>
+<ul>
+<li>大模型专注协调，不需要掌握所有细节</li>
+<li>Agent 专业化，效率更高</li>
+<li>工具标准化，易于扩展和维护</li>
+</ul>
+<h2 id="a2a-的多种协作模式"><strong>A2A 的多种协作模式</strong></h2>
+<h4 id="一总指挥模式中心化协调">一、总指挥模式（中心化协调）</h4>
+<p><img src="/cbsyy.github.io/media/feishu/CTO8bnwQ0oI93RxftQJckRgEnZf.webp" alt="文章配图"></p>
+<p><strong>工作流程：</strong></p>
+<ol>
+<li>用户发送请求</li>
+<li>用户代理（Client Agent）进行任务理解和拆分</li>
+<li>根据能力卡片读取各个 Agent 的能力</li>
+<li>将所需任务通过 Remote Agent 分配给对应的 Agent</li>
+<li>各个 Agent 独立工作，互不干涉</li>
+<li>Remote Agent（A2A 服务器）作为远程代理，实现 A2A 协议的 HTTP 端点，接收请求、处理任务、返回结果</li>
+<li>由 Client Agent 统一协调完成最终任务</li>
+</ol>
+<p><strong>特点：</strong></p>
+<ul>
+<li>有明确的控制中心</li>
+<li>避免了多 Agent 无序协作的混乱</li>
+<li>确保任务进度可控，结果可预期</li>
+</ul>
+<h4 id="二对等协作模式p2p-模式">二、对等协作模式（P2P 模式）</h4>
+<p><img src="/cbsyy.github.io/media/feishu/Fih8bdIlEoPSApxBn5FcBisBn8g.webp" alt="文章配图"></p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>各 Agent 地位平等，直接通信</li>
+<li>无中心控制节点</li>
+<li>适用于复杂推理任务，需要多角度分析</li>
+</ul>
+<p><strong>优点：</strong> 无单点故障，灵活性高<br>
+<strong>缺点：</strong> 协调复杂，可能产生冲突</p>
+<h4 id="三流水线模式pipeline-模式">三、流水线模式（Pipeline 模式）</h4>
+<p><img src="/cbsyy.github.io/media/feishu/TKoYbbkawouJ15xR5u1cxcvunPg.webp" alt="文章配图"></p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>任务按顺序在 Agent 间流转</li>
+<li>每个 Agent 处理特定阶段的工作</li>
+<li>适用于数据处理管道、内容生产流程</li>
+</ul>
+<p><strong>优点：</strong> 逻辑清晰，易于追踪<br>
+<strong>缺点：</strong> 串行处理，效率可能较低</p>
+<h4 id="四分层模式hierarchical-模式">四、分层模式（Hierarchical 模式）</h4>
+<p><img src="/cbsyy.github.io/media/feishu/OQHfbcfIko2hFXxPvrzccBWRnKg.webp" alt="文章配图"></p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>多层级结构，上层负责协调，下层负责执行</li>
+<li>职责分工明确</li>
+<li>适用于企业级应用、复杂业务流程</li>
+</ul>
+<h4 id="五市场竞标模式auction-模式">五、市场竞标模式（Auction 模式）</h4>
+<p><strong>工作流程：</strong></p>
+<ol>
+<li>发布任务需求</li>
+<li>各 Agent 根据自身能力报价/竞标</li>
+<li>选择最优 Agent 执行</li>
+</ol>
+<p><strong>特点：</strong></p>
+<ul>
+<li>动态资源分配</li>
+<li>适用于资源优化分配、动态负载均衡</li>
+</ul>
+<h4 id="六蜂群模式swarm-模式">六、蜂群模式（Swarm 模式）</h4>
+<p><strong>特点：</strong></p>
+<ul>
+<li>大量简单 Agent 协同工作</li>
+<li>类似蜂群的集体智能</li>
+<li>适用于数据采集、并行计算</li>
+</ul>
+<p><strong>优点：</strong> 高并发，容错性强<br>
+<strong>缺点：</strong> 需要有效的聚合机制</p>
+<h4 id="七联邦模式federation-模式">七、联邦模式（Federation 模式）</h4>
+<p><strong>特点：</strong></p>
+<ul>
+<li>不同组织/域的 Agent 通过标准协议协作</li>
+<li>保护各自的数据主权</li>
+<li>适用于跨组织合作、隐私保护场景</li>
+</ul>
+<h4 id="八事件驱动模式event-driven-模式">八、事件驱动模式（Event-Driven 模式）</h4>
+<p><strong>工作流程：</strong> 事件发生 → 相关 Agent 响应 → 处理 → 触发新事件</p>
+<p><strong>特点：</strong></p>
+<ul>
+<li>通过事件触发 Agent 间的交互</li>
+<li>适用于实时系统、IoT 应用</li>
+</ul>
+<h2 id="a2a-相比传统-agent-的优势">A2A 相比传统 Agent 的优势</h2>
+<h3 id="传统-agent-系统的问题">传统 Agent 系统的问题：</h3>
+<ul>
+<li><strong>统一编码要求</strong>：所有功能必须在同一个系统中实现</li>
+<li><strong>整体脆弱性</strong>：一个模块出现问题，整个系统崩溃</li>
+<li><strong>修改复杂性</strong>：要修改功能时，涉及全部的参数格式调整</li>
+<li><strong>维护困难</strong>：添加、删除、修改功能都很繁琐复杂</li>
+<li><strong>扩展性差</strong>：难以灵活扩展新功能</li>
+</ul>
+<h3 id="a2a-系统的优势">A2A 系统的优势：</h3>
+<ul>
+<li><strong>模块化设计</strong>：各个 Agent 独立工作，职责清晰</li>
+<li><strong>容错性强</strong>：一个 Agent 出现问题不影响其他 Agent 的工作</li>
+<li><strong>易于维护</strong>：可以独立开发、部署、更新各个 Agent</li>
+<li><strong>灵活扩展</strong>：可以随时添加新的 Agent 或移除不需要的 Agent</li>
+<li><strong>技术异构</strong>：不同 Agent 可以使用不同的技术栈实现</li>
+<li><strong>分布式部署</strong>：Agent 可以部署在不同的服务器或环境中</li>
+<li><strong>动态组合</strong>：可以根据任务需求动态组合不同的 Agent</li>
+</ul>
+<h3 id="混合协作模式">混合协作模式</h3>
+<p>在实际应用中，往往采用多种模式的组合：</p>
+<ul>
+<li><strong>分层+流水线</strong>：不同层级内部使用流水线处理</li>
+<li><strong>总指挥+市场</strong>：Master Agent 通过竞标机制分配任务</li>
+<li><strong>对等+事件驱动</strong>：Agent 间通过事件进行对等通信</li>
+<li><strong>联邦+分层</strong>：跨组织的分层协作</li>
+</ul>
+<h3 id="技术实现要点">技术实现要点</h3>
+<ol>
+<li>标准化通信协议</li>
+</ol>
+<ul>
+<li>基于 HTTP/REST API 的标准接口</li>
+<li>统一的消息格式和数据交换标准</li>
+<li>错误处理和重试机制</li>
+</ul>
+<ol>
+<li>能力发现机制</li>
+</ol>
+<ul>
+<li>Agent 能力注册和发现</li>
+<li>动态能力匹配</li>
+<li>负载均衡和资源调度</li>
+</ul>
+<ol>
+<li>任务协调协议</li>
+</ol>
+<ul>
+<li>任务分解和分配策略</li>
+<li>执行状态跟踪和汇报</li>
+<li>结果聚合和整合</li>
+</ul>
+<ol>
+<li>状态同步机制</li>
+</ol>
+<ul>
+<li>分布式状态管理</li>
+<li>一致性保证</li>
+<li>故障检测和恢复</li>
+</ul>
+<h3 id="应用场景">应用场景</h3>
+<p>A2A 协作模式适用于多种场景：</p>
+<ul>
+<li><strong>企业级应用</strong>：复杂业务流程的自动化处理</li>
+<li><strong>内容生产</strong>：多环节内容创作和优化</li>
+<li><strong>数据处理</strong>：大规模数据的分布式处理</li>
+<li><strong>智能客服</strong>：多专业领域的客户服务</li>
+<li><strong>决策支持</strong>：多角度分析和决策建议</li>
+<li><strong>跨组织协作</strong>：不同机构间的智能协作</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>A2A 作为一种新兴的多智能体协作架构，通过标准化的协议和多样化的协作模式，解决了传统单体 Agent 系统的诸多问题。它不仅提供了更好的模块化、可维护性和扩展性，还支持复杂任务的高效协作处理。</p>
+<p>随着 AI 技术的发展和应用场景的复杂化，A2A 协作模式将成为构建大规模、高可用智能系统的重要架构选择。选择合适的协作模式，并结合具体的业务需求进行系统设计，是成功实施 A2A 架构的关键。</p>
+<p>各位爱学习的宝子们可关注本公众号，后续干货内容持续更新中，欢迎留言讨论！！！</p>
+</div><div class="note quiet">作者：胡守谦 · 原文创建于 2025-05-29<br><a href="https://gcnwdkci2bvl.feishu.cn/docx/MAm8dC4i6owzsfxko40caf6KnHd" target="_blank" rel="noreferrer">查看飞书原文 ↗</a></div></article><script type="module" src="/cbsyy.github.io/_astro/_id_.astro_astro_type_script_index_0_lang.BBSikV_p.js"></script></main><footer><span>© 2026 BINGLU</span><span>文章 · 阅读 · 生活</span><a href="#main">回到顶部 ↑</a></footer></div><dialog id="search-dialog" aria-labelledby="search-label"><div class="search-head"><label id="search-label" for="search-input">搜索文章和书籍</label><button id="close-search" aria-label="关闭搜索">×</button></div><input id="search-input" type="search" placeholder="标题、作者、关键词或正文" autocomplete="off"><p id="search-status" role="status"></p><div id="search-results"></div></dialog><script type="module" src="/cbsyy.github.io/_astro/Base.astro_astro_type_script_index_0_lang.CnNA6jUg.js"></script></body></html>
